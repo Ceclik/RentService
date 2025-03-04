@@ -12,7 +12,18 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async login(dto: CreateUserDto) {}
+  async login(dto: CreateUserDto) {
+    const user = await this.userService.getUsersByEmail(dto.email);
+    if (!user)
+      throw new HttpException(
+        'No user with such email',
+        HttpStatus.BAD_REQUEST,
+      );
+
+    const arePasswordsEqual = await bcrypt.compare(dto.password, user.password);
+    if (arePasswordsEqual) return this.generateToken(user);
+    else throw new HttpException('Wrong password!', HttpStatus.BAD_REQUEST);
+  }
 
   async register(dto: CreateUserDto) {
     if (await this.userService.getUsersByEmail(dto.email)) {
@@ -34,6 +45,7 @@ export class AuthService {
 
   generateToken(user: User) {
     const payload = { email: user.email, id: user.id, roles: user.roles };
+    console.log(`In generate token. Payload: ${JSON.stringify(payload)}`);
     return {
       token: this.jwtService.sign(payload),
     };
