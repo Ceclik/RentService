@@ -39,7 +39,7 @@ export class User extends Model<User, UserCreationAttrs> {
     description: 'Hashed users password',
   })
   @Column({ type: DataType.STRING, allowNull: false })
-  password_hash: string;
+  password: string;
 
   @ApiProperty({ example: 'false', description: 'Is user banned flag' })
   @Column({ type: DataType.BOOLEAN, allowNull: false, defaultValue: false })
