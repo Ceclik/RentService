@@ -22,8 +22,8 @@ export class UsersService {
       const role = await this.roleService.getRoleByValue('CLIENT');
       if (role instanceof Role) {
         await createdUser.$set('roles', role.id, { transaction });
+        createdUser.roles = [role];
       }
-
       if (transaction) await transaction.commit();
       return createdUser;
     } catch (err) {
