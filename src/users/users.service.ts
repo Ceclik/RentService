@@ -4,6 +4,7 @@ import { InjectModel } from '@nestjs/sequelize';
 import { CreateUserDto } from './dto/create-user.dto';
 import { Role } from '../roles/roles.model';
 import { RolesService } from '../roles/roles.service';
+import { BanUserDto } from './dto/ban-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -49,5 +50,18 @@ export class UsersService {
   async deleteUser(id: number) {
     await this.userRepository.destroy({ where: { id } });
     return JSON.stringify('User has been successfully deleted!');
+  }
+
+  async banUser(dto: BanUserDto) {
+    const user = await this.userRepository.findByPk(dto.id);
+    if (!user || user.banned)
+      throw new HttpException('User not found', HttpStatus.BAD_REQUEST);
+    else {
+      user.banned = true;
+      user.ban_reason = dto.reason;
+      await user.save();
+    }
+
+    return JSON.stringify('Selected user has been successfully banned!');
   }
 }

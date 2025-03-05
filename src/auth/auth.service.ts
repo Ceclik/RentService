@@ -45,7 +45,6 @@ export class AuthService {
 
   generateToken(user: User) {
     const payload = { email: user.email, id: user.id, roles: user.roles };
-    console.log(`In generate token. Payload: ${JSON.stringify(payload)}`);
     return {
       token: this.jwtService.sign(payload),
     };
