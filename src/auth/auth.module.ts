@@ -4,6 +4,8 @@ import { AuthService } from './auth.service';
 import { UsersModule } from '../users/users.module';
 import { JwtModule } from '@nestjs/jwt';
 import * as process from 'node:process';
+import { ConfigModule } from '@nestjs/config';
+import googleOauthConfig from './config/google-oauth.config';
 
 @Module({
   controllers: [AuthController],
@@ -16,6 +18,7 @@ import * as process from 'node:process';
         expiresIn: '12h',
       },
     }),
+    ConfigModule.forFeature(googleOauthConfig),
   ],
   exports: [AuthService, JwtModule],
 })

@@ -10,10 +10,10 @@ import {
 import { UsersService } from './users.service';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { User } from './users.model';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { BanUserDto } from './dto/ban-user.dto';
 import { Roles } from '../auth/roles-auth.decorator';
-import { RolesAuthGuard } from '../auth/roles-auth.guard';
+import { RolesAuthGuard } from '../auth/guards/roles-auth.guard';
 import { AddUserRoleDto } from './dto/add-user-role.dto';
 
 @ApiTags('Operations with users accounts and access controlling')
