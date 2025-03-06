@@ -10,6 +10,13 @@ import * as process from 'node:process';
 import { Role } from './roles/roles.model';
 import { UserRoles } from './roles/user-roles.model';
 import { AuthModule } from './auth/auth.module';
+import { PropertiesModule } from './properties/properties.module';
+import { TypesService } from './types/types.service';
+import { TypesModule } from './types/types.module';
+import { DescriptionsModule } from './descriptions/descriptions.module';
+import { Property } from './properties/properties.model';
+import { Description } from './descriptions/descriptions.model';
+import { Type } from './types/typs.model';
 
 @Module({
   imports: [
@@ -24,13 +31,16 @@ import { AuthModule } from './auth/auth.module';
       username: process.env.POSTGRES_USER,
       password: process.env.POSTGRES_PASSWORD,
       database: process.env.POSTGRES_DB,
-      models: [User, Role, UserRoles],
+      models: [User, Role, UserRoles, Property, Type, Description],
       autoLoadModels: true,
     }),
     RolesModule,
     AuthModule,
+    PropertiesModule,
+    TypesModule,
+    DescriptionsModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, TypesService],
 })
 export class AppModule {}
