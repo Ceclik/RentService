@@ -6,10 +6,11 @@ import { JwtModule } from '@nestjs/jwt';
 import * as process from 'node:process';
 import { ConfigModule } from '@nestjs/config';
 import googleOauthConfig from './config/google-oauth.config';
+import { GoogleStrategy } from '../strategies/google.strategy';
 
 @Module({
   controllers: [AuthController],
-  providers: [AuthService],
+  providers: [AuthService, GoogleStrategy],
   imports: [
     forwardRef(() => UsersModule),
     JwtModule.register({

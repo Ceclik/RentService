@@ -20,6 +20,8 @@ export class AuthService {
         HttpStatus.BAD_REQUEST,
       );
 
+    if (user.password === '' && user.oauth_provider === 'google')
+      return this.generateToken(user);
     const arePasswordsEqual = await bcrypt.compare(dto.password, user.password);
     if (arePasswordsEqual) return this.generateToken(user);
     else throw new HttpException('Wrong password!', HttpStatus.BAD_REQUEST);
@@ -48,5 +50,13 @@ export class AuthService {
     return {
       token: this.jwtService.sign(payload),
     };
+  }
+
+  async validateGoogleUser(googleUser: CreateUserDto) {
+    console.log(`in validate google user, user: ${JSON.stringify(googleUser)}`);
+    const user = await this.userService.getUsersByEmail(googleUser.email);
+    if (user) return user;
+
+    return await this.userService.createUser(googleUser);
   }
 }

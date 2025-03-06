@@ -12,8 +12,8 @@ import { Role } from '../roles/roles.model';
 interface UserCreationAttrs {
   email: string;
   password: string;
-  oauthId: string;
-  oauthProvider: string;
+  oauth_id: string;
+  oauth_provider: string;
 }
 
 @Table({ tableName: 'users' })

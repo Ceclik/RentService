@@ -38,6 +38,8 @@ export class RolesAuthGuard implements CanActivate {
       }
 
       const user = this.jwtService.verify(token);
+      if (user.password === '')
+        throw new UnauthorizedException({ message: 'User is not authorized!' });
       req.user = user;
 
       const isAccessable = user.roles.some((role) =>

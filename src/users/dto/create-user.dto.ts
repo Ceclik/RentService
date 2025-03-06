@@ -2,6 +2,18 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsString, Length } from 'class-validator';
 
 export class CreateUserDto {
+  constructor(
+    email: string,
+    password: string,
+    oauthId: string,
+    oauthProvider: string,
+  ) {
+    this.email = email;
+    this.password = password;
+    this.oauth_id = oauthId;
+    this.oauth_provider = oauthProvider;
+  }
+
   @ApiProperty({
     example: '123@gmail.com',
     description: 'email identifier of the user',
@@ -21,12 +33,12 @@ export class CreateUserDto {
   readonly password: string;
 
   @ApiProperty({ example: '1', description: 'oauth id' })
-  readonly oauthId: string;
+  readonly oauth_id: string;
 
   @ApiProperty({
     example: '1',
     description:
       'oauth provider if user has been registered using google, Facebook, etc.',
   })
-  readonly oauthProvider: string;
+  readonly oauth_provider: string;
 }
