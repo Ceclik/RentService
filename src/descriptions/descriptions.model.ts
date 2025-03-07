@@ -1,7 +1,8 @@
 import {
   BelongsTo,
   Column,
-  DataType, ForeignKey,
+  DataType,
+  ForeignKey,
   Model,
   Table,
 } from 'sequelize-typescript';
@@ -42,6 +43,6 @@ export class Description extends Model<Description, DescriptionCreationAttrs> {
   @Column({ type: DataType.INTEGER, allowNull: false })
   propertyId: number;
 
-  @BelongsTo(() => Property)
+  @BelongsTo(() => Property, { onDelete: 'CASCADE' })
   property: Property;
 }

@@ -1,14 +1,15 @@
 import {
   BelongsTo,
   Column,
-  DataType, ForeignKey,
+  DataType,
+  ForeignKey,
   HasMany,
   Model,
   Table,
 } from 'sequelize-typescript';
 import { ApiProperty } from '@nestjs/swagger';
 import { User } from '../users/users.model';
-import { Type } from '../types/typs.model';
+import { Type } from '../types/types.model';
 import { Description } from '../descriptions/descriptions.model';
 
 interface PropertyCreationAttrs {
@@ -54,7 +55,7 @@ export class Property extends Model<Property, PropertyCreationAttrs> {
   @Column({ type: DataType.INTEGER, allowNull: false })
   typeId: number;
 
-  @BelongsTo(() => User)
+  @BelongsTo(() => User, { onDelete: 'CASCADE' })
   owner: User;
 
   @BelongsTo(() => Type)
