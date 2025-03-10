@@ -60,4 +60,62 @@ export class PropertiesService {
   async getAllProperties() {
     return await this.propertyRepository.findAll({ include: { all: true } });
   }
+
+  async deleteProperty(id: number) {
+    await this.propertyRepository.destroy({ where: { id } });
+    return JSON.stringify('Chosen property has been successfully deleted!');
+  }
+
+  async getOneProperty(id: number) {
+    const property = await this.propertyRepository.findByPk(id);
+    if (!property) return JSON.stringify('There is no such property');
+    return property;
+  }
+
+  async updateProperty(dto: ReceivePropertyDto, ownerId: number, id: number) {
+    const transaction = await this.propertyRepository.sequelize?.transaction();
+    try {
+      if (!(await this.typesRepository.findByPk(dto.typeId)))
+        throw new BadRequestException('Type with this id does not exists');
+
+      await this.propertyRepository.update(
+        {
+          title: dto.title,
+          location: dto.location,
+          price: dto.price,
+          typeId: dto.typeId,
+        },
+        {
+          where: { id },
+          transaction,
+        },
+      );
+
+      const propertyDescriptions = await this.descriptionRepository.findAll({
+        where: { propertyId: id },
+      });
+
+      for (let i = 0; i < propertyDescriptions.length; i++) {
+        await this.descriptionRepository.update(
+          {
+            title: dto.descriptions[i].title,
+            description: dto.descriptions[i].description,
+          },
+          {
+            where: { id: propertyDescriptions[i].id },
+            transaction,
+          },
+        );
+      }
+
+      if (transaction) await transaction.commit();
+      return await this.propertyRepository.findByPk(id, {
+        include: { all: true },
+      });
+    } catch (e) {
+      console.log(e);
+      if (transaction) await transaction.rollback();
+      throw new InternalServerErrorException();
+    }
+  }
 }

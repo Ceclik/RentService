@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post, Put,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { PropertiesService } from './properties.service';
 import { Property } from './properties.model';
@@ -28,5 +37,33 @@ export class PropertiesController {
   @Get('/all')
   getAllProperties() {
     return this.propertiesService.getAllProperties();
+  }
+
+  @ApiOperation({ summary: 'Delete picked property' })
+  @ApiResponse({ status: 200, type: String })
+  @Roles('OWNER', 'ADMIN')
+  @UseGuards(RolesAuthGuard)
+  @Delete('/delete/:id')
+  deleteProperty(@Param('id') id: number) {
+    return this.propertiesService.deleteProperty(id);
+  }
+
+  @ApiOperation({ summary: 'Returns information about one chosen property' })
+  @ApiResponse({ status: 200, type: Property })
+  @Roles('CLIENT', 'OWNER', 'ADMIN')
+  @UseGuards(RolesAuthGuard)
+  @Get('/:id')
+  getOneProperty(@Param('id') id: number) {
+    return this.propertiesService.getOneProperty(id);
+  }
+
+  @ApiOperation({ summary: 'Updates properties info' })
+  @ApiResponse({ status: 200, type: Property })
+  @Roles('ADMIN', 'OWNER')
+  @UseGuards(RolesAuthGuard)
+  @Put('/update/:id')
+  update(@Body() dto: ReceivePropertyDto, @Req() req, @Param('id') id: number) {
+    const ownerId: number = req.user.id;
+    return this.propertiesService.updateProperty(dto, ownerId, id);
   }
 }
