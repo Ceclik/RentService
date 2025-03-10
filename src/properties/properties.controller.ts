@@ -4,9 +4,11 @@ import {
   Delete,
   Get,
   Param,
-  Post, Put,
+  Post,
+  Put,
   Req,
-  UseGuards,
+  UploadedFiles,
+  UseGuards, UseInterceptors,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { PropertiesService } from './properties.service';
@@ -14,6 +16,7 @@ import { Property } from './properties.model';
 import { Roles } from '../auth/roles-auth.decorator';
 import { RolesAuthGuard } from '../auth/guards/roles-auth.guard';
 import { ReceivePropertyDto } from './dto/receive-property.dto';
+import { FilesInterceptor } from '@nestjs/platform-express';
 
 @ApiTags('Operations with properties')
 @Controller('properties')
@@ -25,9 +28,10 @@ export class PropertiesController {
   @Roles('ADMIN', 'OWNER')
   @UseGuards(RolesAuthGuard)
   @Post('/add')
-  create(@Body() dto: ReceivePropertyDto, @Req() req) {
+  @UseInterceptors(FilesInterceptor('images'))
+  create(@Body() dto: ReceivePropertyDto, @Req() req, @UploadedFiles() images) {
     const ownerId: number = req.user.id;
-    return this.propertiesService.createProperty(dto, ownerId);
+    return this.propertiesService.createProperty(dto, ownerId, images);
   }
 
   @ApiOperation({ summary: 'Returns all created properties' })

@@ -12,10 +12,11 @@ import { UserRoles } from './roles/user-roles.model';
 import { AuthModule } from './auth/auth.module';
 import { PropertiesModule } from './properties/properties.module';
 import { TypesModule } from './types/types.module';
-import { DescriptionsModule } from './descriptions/descriptions.module';
 import { Property } from './properties/properties.model';
 import { Description } from './descriptions/descriptions.model';
 import { Type } from './types/types.model';
+import { PropertyImage } from './descriptions/property-images.model';
+import { FilesModule } from './files/files.module';
 
 @Module({
   imports: [
@@ -30,7 +31,15 @@ import { Type } from './types/types.model';
       username: process.env.POSTGRES_USER,
       password: process.env.POSTGRES_PASSWORD,
       database: process.env.POSTGRES_DB,
-      models: [User, Role, UserRoles, Property, Type, Description],
+      models: [
+        User,
+        Role,
+        UserRoles,
+        Property,
+        Type,
+        Description,
+        PropertyImage,
+      ],
       autoLoadModels: true,
       synchronize: true,
     }),
@@ -38,7 +47,7 @@ import { Type } from './types/types.model';
     AuthModule,
     PropertiesModule,
     TypesModule,
-    DescriptionsModule,
+    FilesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

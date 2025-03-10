@@ -1,13 +1,15 @@
-import {
-  BadRequestException,
-  Injectable,
-  InternalServerErrorException,
-} from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Property } from './properties.model';
 import { Description } from '../descriptions/descriptions.model';
 import { Type } from '../types/types.model';
 import { ReceivePropertyDto } from './dto/receive-property.dto';
+import { PropertyImage } from '../descriptions/property-images.model';
+import { FilesService } from '../files/files.service';
+import { CreateDescriptionDto } from '../descriptions/dto/create-description.dto';
+
+class ReceiveDescriptionDto {
+}
 
 @Injectable()
 export class PropertiesService {
@@ -15,11 +17,14 @@ export class PropertiesService {
     @InjectModel(Property) private propertyRepository: typeof Property,
     @InjectModel(Description) private descriptionRepository: typeof Description,
     @InjectModel(Type) private typesRepository: typeof Type,
+    @InjectModel(PropertyImage) private imagesRepository: typeof PropertyImage,
+    private filesService: FilesService,
   ) {}
 
-  async createProperty(dto: ReceivePropertyDto, ownerId: number) {
+  async createProperty(dto: ReceivePropertyDto, ownerId: number, images) {
     const transaction = await this.propertyRepository.sequelize?.transaction();
     try {
+      console.log(`dto in controller: ${JSON.stringify(dto)}`);
       const createPropertyDto = {
         title: dto.title,
         location: dto.location,
@@ -38,6 +43,7 @@ export class PropertiesService {
       );
 
       for (const description of dto.descriptions) {
+        console.log(`description in cycle: ${JSON.stringify(description)}`);
         const createDescriptionDto = {
           title: description.title,
           description: description.description,
@@ -46,6 +52,17 @@ export class PropertiesService {
         await this.descriptionRepository.create(createDescriptionDto, {
           transaction,
         });
+      }
+
+      for (const image of images) {
+        const imageUrl = await this.filesService.createFile(image);
+        await this.imagesRepository.create(
+          {
+            imageUrl,
+            propertyId: createdProperty.id,
+          },
+          { transaction },
+        );
       }
 
       if (transaction) await transaction.commit();
