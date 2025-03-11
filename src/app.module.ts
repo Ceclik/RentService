@@ -17,6 +17,8 @@ import { Description } from './descriptions/descriptions.model';
 import { Type } from './types/types.model';
 import { PropertyImage } from './descriptions/property-images.model';
 import { FilesModule } from './files/files.module';
+import { BookingsModule } from './bookings/bookings.module';
+import { Booking } from './bookings/bookings.model';
 
 @Module({
   imports: [
@@ -39,15 +41,17 @@ import { FilesModule } from './files/files.module';
         Type,
         Description,
         PropertyImage,
+        Booking
       ],
       autoLoadModels: true,
-      //synchronize: true,
+      synchronize: true,
     }),
     RolesModule,
     AuthModule,
     PropertiesModule,
     TypesModule,
     FilesModule,
+    BookingsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

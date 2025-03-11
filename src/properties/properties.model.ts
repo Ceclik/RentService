@@ -4,6 +4,7 @@ import {
   DataType,
   ForeignKey,
   HasMany,
+  HasOne,
   Model,
   Table,
 } from 'sequelize-typescript';
@@ -12,6 +13,7 @@ import { User } from '../users/users.model';
 import { Type } from '../types/types.model';
 import { Description } from '../descriptions/descriptions.model';
 import { PropertyImage } from '../descriptions/property-images.model';
+import { Booking } from '../bookings/bookings.model';
 
 interface PropertyCreationAttrs {
   title: string;
@@ -53,7 +55,7 @@ export class Property extends Model<Property, PropertyCreationAttrs> {
     description: 'Flag that shows weather users can book this property or not',
   })
   @Column({ type: DataType.BOOLEAN, defaultValue: true })
-  isavailabletobook: boolean;
+  isAvailableToBook: boolean;
 
   @ForeignKey(() => User)
   @Column({ type: DataType.INTEGER, allowNull: false })
@@ -74,4 +76,7 @@ export class Property extends Model<Property, PropertyCreationAttrs> {
 
   @HasMany(() => PropertyImage)
   propertyImages: PropertyImage[];
+
+  @HasOne(() => Booking)
+  booking: Booking;
 }

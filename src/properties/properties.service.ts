@@ -11,8 +11,6 @@ import { ReceivePropertyDto } from './dto/receive-property.dto';
 import { PropertyImage } from '../descriptions/property-images.model';
 import { FilesService } from '../files/files.service';
 
-class ReceiveDescriptionDto {}
-
 @Injectable()
 export class PropertiesService {
   constructor(
@@ -141,7 +139,7 @@ export class PropertiesService {
   async getAvailableToBookProperties() {
     try {
       const availableToBookProperties = await this.propertyRepository.findAll({
-        where: { isavailabletobook: true },
+        where: { isAvailableToBook: true },
         include: { all: true },
       });
       if (!availableToBookProperties)
