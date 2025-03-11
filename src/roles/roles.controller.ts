@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { RolesService } from './roles.service';
 import { Role } from './roles.model';
@@ -27,5 +27,14 @@ export class RolesController {
   @Get('/:value')
   getByValue(@Param('value') value: string) {
     return this.rolesService.getRoleByValue(value);
+  }
+
+  @ApiOperation({ summary: 'Deletes role according to sent value' })
+  @ApiResponse({ status: 200, type: String })
+  @Roles('ADMIN')
+  @UseGuards(RolesAuthGuard)
+  @Delete('delete/:value')
+  deleteByValue(@Param('value') value: string) {
+    return this.rolesService.deleteRoleByValue(value);
   }
 }
