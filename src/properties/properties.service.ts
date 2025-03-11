@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Property } from './properties.model';
 import { Description } from '../descriptions/descriptions.model';
@@ -6,10 +10,8 @@ import { Type } from '../types/types.model';
 import { ReceivePropertyDto } from './dto/receive-property.dto';
 import { PropertyImage } from '../descriptions/property-images.model';
 import { FilesService } from '../files/files.service';
-import { CreateDescriptionDto } from '../descriptions/dto/create-description.dto';
 
-class ReceiveDescriptionDto {
-}
+class ReceiveDescriptionDto {}
 
 @Injectable()
 export class PropertiesService {
@@ -132,6 +134,21 @@ export class PropertiesService {
     } catch (e) {
       console.log(e);
       if (transaction) await transaction.rollback();
+      throw new InternalServerErrorException();
+    }
+  }
+
+  async getAvailableToBookProperties() {
+    try {
+      const availableToBookProperties = await this.propertyRepository.findAll({
+        where: { isavailabletobook: true },
+        include: { all: true },
+      });
+      if (!availableToBookProperties)
+        return JSON.stringify('All properties are now booked');
+      return availableToBookProperties;
+    } catch (e) {
+      console.log(e);
       throw new InternalServerErrorException();
     }
   }

@@ -48,6 +48,13 @@ export class Property extends Model<Property, PropertyCreationAttrs> {
   @Column({ type: DataType.FLOAT, allowNull: false, defaultValue: 0.0 })
   price: number;
 
+  @ApiProperty({
+    example: 'true',
+    description: 'Flag that shows weather users can book this property or not',
+  })
+  @Column({ type: DataType.BOOLEAN, defaultValue: true })
+  isavailabletobook: boolean;
+
   @ForeignKey(() => User)
   @Column({ type: DataType.INTEGER, allowNull: false })
   ownerId: number;

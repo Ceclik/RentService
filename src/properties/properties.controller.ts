@@ -8,7 +8,8 @@ import {
   Put,
   Req,
   UploadedFiles,
-  UseGuards, UseInterceptors,
+  UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { PropertiesService } from './properties.service';
@@ -52,13 +53,15 @@ export class PropertiesController {
     return this.propertiesService.deleteProperty(id);
   }
 
-  @ApiOperation({ summary: 'Returns information about one chosen property' })
-  @ApiResponse({ status: 200, type: Property })
+  @ApiOperation({
+    summary: 'Returns information about available to book properties',
+  })
+  @ApiResponse({ status: 200, type: [Property] })
   @Roles('CLIENT', 'OWNER', 'ADMIN')
   @UseGuards(RolesAuthGuard)
-  @Get('/:id')
-  getOneProperty(@Param('id') id: number) {
-    return this.propertiesService.getOneProperty(id);
+  @Get('/available')
+  getAvailableToBookProperties() {
+    return this.propertiesService.getAvailableToBookProperties();
   }
 
   @ApiOperation({ summary: 'Updates properties info' })
@@ -69,5 +72,14 @@ export class PropertiesController {
   update(@Body() dto: ReceivePropertyDto, @Req() req, @Param('id') id: number) {
     const ownerId: number = req.user.id;
     return this.propertiesService.updateProperty(dto, ownerId, id);
+  }
+
+  @ApiOperation({ summary: 'Returns information about one chosen property' })
+  @ApiResponse({ status: 200, type: Property })
+  @Roles('CLIENT', 'OWNER', 'ADMIN')
+  @UseGuards(RolesAuthGuard)
+  @Get('/:id')
+  getOneProperty(@Param('id') id: number) {
+    return this.propertiesService.getOneProperty(id);
   }
 }

@@ -41,7 +41,7 @@ import { FilesModule } from './files/files.module';
         PropertyImage,
       ],
       autoLoadModels: true,
-      synchronize: true,
+      //synchronize: true,
     }),
     RolesModule,
     AuthModule,
