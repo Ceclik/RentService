@@ -135,19 +135,4 @@ export class PropertiesService {
       throw new InternalServerErrorException();
     }
   }
-
-  async getAvailableToBookProperties() {
-    try {
-      const availableToBookProperties = await this.propertyRepository.findAll({
-        where: { isAvailableToBook: true },
-        include: { all: true },
-      });
-      if (!availableToBookProperties)
-        return JSON.stringify('All properties are now booked');
-      return availableToBookProperties;
-    } catch (e) {
-      console.log(e);
-      throw new InternalServerErrorException();
-    }
-  }
 }

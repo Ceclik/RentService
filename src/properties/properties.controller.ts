@@ -53,17 +53,6 @@ export class PropertiesController {
     return this.propertiesService.deleteProperty(id);
   }
 
-  @ApiOperation({
-    summary: 'Returns information about available to book properties',
-  })
-  @ApiResponse({ status: 200, type: [Property] })
-  @Roles('CLIENT', 'OWNER', 'ADMIN')
-  @UseGuards(RolesAuthGuard)
-  @Get('/available')
-  getAvailableToBookProperties() {
-    return this.propertiesService.getAvailableToBookProperties();
-  }
-
   @ApiOperation({ summary: 'Updates properties info' })
   @ApiResponse({ status: 200, type: Property })
   @Roles('ADMIN', 'OWNER')

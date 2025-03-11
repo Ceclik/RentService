@@ -11,8 +11,8 @@ import { User } from '../users/users.model';
 
 interface BookingCreationAttrs {
   status: string;
-  startDate: string;
-  endDate: string;
+  startDate: Date;
+  endDate: Date;
   propertyId: number;
   clientId: number;
 }
