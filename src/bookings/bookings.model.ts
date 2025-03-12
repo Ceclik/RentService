@@ -40,14 +40,14 @@ export class Booking extends Model<Booking, BookingCreationAttrs> {
     description: 'Start date of the booking',
   })
   @Column({ type: DataType.DATE, allowNull: false })
-  startDate: string;
+  startDate: Date;
 
   @ApiProperty({
     example: '11.03.2025',
     description: 'End date of the booking',
   })
   @Column({ type: DataType.DATE, allowNull: false })
-  endDate: string;
+  endDate: Date;
 
   @ForeignKey(() => User)
   @Column({ type: DataType.INTEGER, allowNull: false })

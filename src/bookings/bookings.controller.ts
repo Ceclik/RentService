@@ -1,4 +1,12 @@
-import { Body, Controller, Delete, Get, Param, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post, Put,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Roles } from '../auth/roles-auth.decorator';
 import { RolesAuthGuard } from '../auth/guards/roles-auth.guard';
@@ -60,5 +68,16 @@ export class BookingsController {
   @Delete('/remove/:id')
   removeBooking(@Param('id') id: number) {
     return this.bookingsService.removeBooking(id);
+  }
+
+  @ApiOperation({
+    summary: 'Updates booking',
+  })
+  @ApiResponse({ status: 200, type: Booking })
+  @Roles('CLIENT', 'ADMIN', 'OWNER')
+  @UseGuards(RolesAuthGuard)
+  @Put('/update/:id')
+  updateBooking(@Body() dto: CreateBookingDto, @Param('id') id: number) {
+    return this.bookingsService.updateBooking(dto, id);
   }
 }
