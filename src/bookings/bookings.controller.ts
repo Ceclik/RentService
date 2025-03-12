@@ -80,4 +80,37 @@ export class BookingsController {
   updateBooking(@Body() dto: CreateBookingDto, @Param('id') id: number) {
     return this.bookingsService.updateBooking(dto, id);
   }
+
+  @ApiOperation({
+    summary: 'Returns all active bookings of required property',
+  })
+  @ApiResponse({ status: 200, type: [Booking] })
+  @Roles('CLIENT', 'ADMIN', 'OWNER')
+  @UseGuards(RolesAuthGuard)
+  @Get('/allActiveBookingsOfProperty/:propertyId')
+  getAllActiveBookingsOfProperty(@Param('propertyId') propertyId: number) {
+    return this.bookingsService.getAllActiveBookingsOfProperty(propertyId);
+  }
+
+  @ApiOperation({
+    summary: 'Returns all bookings of required property',
+  })
+  @ApiResponse({ status: 200, type: [Booking] })
+  @Roles('ADMIN', 'OWNER')
+  @UseGuards(RolesAuthGuard)
+  @Get('/allBookingsOfProperty/:propertyId')
+  getAllBookingsOfProperty(@Param('propertyId') propertyId: number) {
+    return this.bookingsService.getAllBookingsOfProperty(propertyId);
+  }
+
+  @ApiOperation({
+    summary: 'Returns booking information and changes it status to confirmed',
+  })
+  @ApiResponse({ status: 200, type: Booking })
+  @Roles('ADMIN', 'OWNER')
+  @UseGuards(RolesAuthGuard)
+  @Put('/confirm/:bookingId')
+  confirm(@Param('bookingId') id: number) {
+    return this.bookingsService.confirmBooking(id);
+  }
 }

@@ -16,6 +16,15 @@ export class BookingsService {
     @InjectModel(Property) private propertyRepository: typeof Property,
   ) {}
 
+  private catchError(e: Error) {
+    if (e instanceof BadRequestException)
+      throw new BadRequestException(e.message);
+    else {
+      console.log(e);
+      throw new InternalServerErrorException();
+    }
+  }
+
   private async validateBookingDates(
     dto: CreateBookingDto,
     bookingId?: number,
@@ -69,8 +78,7 @@ export class BookingsService {
         return JSON.stringify('There are no created bookings yet!');
       return bookings;
     } catch (e) {
-      console.log(e);
-      throw new InternalServerErrorException();
+      this.catchError(e);
     }
   }
 
@@ -89,8 +97,7 @@ export class BookingsService {
       if (e instanceof BadRequestException)
         throw new BadRequestException(e.message);
       else {
-        console.log(e);
-        throw new InternalServerErrorException();
+        this.catchError(e);
       }
     }
   }
@@ -101,8 +108,7 @@ export class BookingsService {
         where: { clientId, status: 'confirmed' },
       });
     } catch (e) {
-      console.log(e);
-      throw new InternalServerErrorException();
+      this.catchError(e);
     }
   }
 
@@ -117,12 +123,7 @@ export class BookingsService {
 
       return JSON.stringify('Booking has been successfully deleted!');
     } catch (e) {
-      if (e instanceof BadRequestException)
-        throw new BadRequestException(e.message);
-      else {
-        console.log(e);
-        throw new InternalServerErrorException();
-      }
+      this.catchError(e);
     }
   }
 
@@ -132,8 +133,7 @@ export class BookingsService {
         where: { clientId },
       });
     } catch (e) {
-      console.log(e);
-      throw new InternalServerErrorException();
+      this.catchError(e);
     }
   }
 
@@ -150,12 +150,50 @@ export class BookingsService {
       });
       return bookingToUpdate;
     } catch (e) {
-      if (e instanceof BadRequestException)
-        throw new BadRequestException(e.message);
-      else {
-        console.log(e);
-        throw new InternalServerErrorException();
-      }
+      this.catchError(e);
+    }
+  }
+
+  async getAllActiveBookingsOfProperty(propertyId: number) {
+    try {
+      const foundBookings = await this.bookingsRepository.findAll({
+        where: {
+          propertyId,
+          status: { [Op.or]: ['confirmed', 'pending'] },
+        },
+      });
+      if (!foundBookings)
+        return JSON.stringify(
+          'This property does not have any active bookings',
+        );
+      return foundBookings;
+    } catch (e) {
+      this.catchError(e);
+    }
+  }
+
+  async getAllBookingsOfProperty(propertyId: number) {
+    try {
+      const foundBookings = await this.bookingsRepository.findAll({
+        where: { propertyId },
+      });
+      if (!foundBookings)
+        return JSON.stringify('This property does not have any bookings');
+      return foundBookings;
+    } catch (e) {
+      this.catchError(e);
+    }
+  }
+
+  async confirmBooking(id: number) {
+    try {
+      const bookingToConfirm = await this.bookingsRepository.findByPk(id);
+      if (!bookingToConfirm)
+        throw new BadRequestException('There is not such booking');
+      await bookingToConfirm.update({ status: 'confirmed' });
+      return bookingToConfirm;
+    } catch (e) {
+      this.catchError(e);
     }
   }
 }
