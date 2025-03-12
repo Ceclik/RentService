@@ -21,6 +21,7 @@ import { BookingsModule } from './bookings/bookings.module';
 import { Booking } from './bookings/bookings.model';
 import { ContractsModule } from './contracts/contracts.module';
 import { Contract } from './contracts/contracts.model';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -56,6 +57,7 @@ import { Contract } from './contracts/contracts.model';
     FilesModule,
     BookingsModule,
     ContractsModule,
+    ScheduleModule.forRoot(),
   ],
   controllers: [AppController],
   providers: [AppService],

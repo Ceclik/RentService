@@ -4,6 +4,7 @@ import { InjectModel } from '@nestjs/sequelize';
 import { Booking } from '../bookings/bookings.model';
 import { addDays, differenceInDays, startOfDay } from 'date-fns';
 import { Property } from '../properties/properties.model';
+import { Cron, CronExpression } from '@nestjs/schedule';
 
 @Injectable()
 export class ContractsService {
@@ -29,6 +30,7 @@ export class ContractsService {
     return days * pricePerDay;
   }
 
+  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
   async generateContractsForUpcomingBookings() {
     try {
       const tomorrow = startOfDay(addDays(new Date(), 1));
