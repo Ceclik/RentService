@@ -1,16 +1,18 @@
 import {
+  BelongsTo,
   Column,
   DataType,
   ForeignKey,
+  HasOne,
   Model,
   Table,
 } from 'sequelize-typescript';
 import { ApiProperty } from '@nestjs/swagger';
 import { Property } from '../properties/properties.model';
 import { User } from '../users/users.model';
+import { Contract } from '../contracts/contracts.model';
 
 interface BookingCreationAttrs {
-  status: string;
   startDate: Date;
   endDate: Date;
   propertyId: number;
@@ -32,7 +34,7 @@ export class Booking extends Model<Booking, BookingCreationAttrs> {
     example: 'confirmed',
     description: 'status of the booking',
   })
-  @Column({ type: DataType.STRING, allowNull: false })
+  @Column({ type: DataType.STRING, allowNull: false, defaultValue: 'pending' })
   status: string;
 
   @ApiProperty({
@@ -56,4 +58,13 @@ export class Booking extends Model<Booking, BookingCreationAttrs> {
   @ForeignKey(() => Property)
   @Column({ type: DataType.INTEGER, allowNull: false })
   propertyId: number;
+
+  @BelongsTo(() => User)
+  user: User;
+
+  @BelongsTo(() => Property)
+  property: Property;
+
+  @HasOne(() => Contract)
+  contract: Contract;
 }

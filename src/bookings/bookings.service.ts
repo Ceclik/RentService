@@ -87,7 +87,6 @@ export class BookingsService {
       const { startDate, endDate } = await this.validateBookingDates(dto);
 
       return await this.bookingsRepository.create({
-        status: dto.status,
         startDate,
         endDate,
         propertyId: dto.propertyId,
@@ -142,7 +141,6 @@ export class BookingsService {
       const { startDate, endDate } = await this.validateBookingDates(dto, id);
       const bookingToUpdate = await this.bookingsRepository.findByPk(id);
       await bookingToUpdate?.update({
-        status: dto.status,
         startDate,
         endDate,
         propertyId: dto.propertyId,

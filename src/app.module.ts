@@ -19,6 +19,8 @@ import { PropertyImage } from './descriptions/property-images.model';
 import { FilesModule } from './files/files.module';
 import { BookingsModule } from './bookings/bookings.module';
 import { Booking } from './bookings/bookings.model';
+import { ContractsModule } from './contracts/contracts.module';
+import { Contract } from './contracts/contracts.model';
 
 @Module({
   imports: [
@@ -41,7 +43,8 @@ import { Booking } from './bookings/bookings.model';
         Type,
         Description,
         PropertyImage,
-        Booking
+        Booking,
+        Contract,
       ],
       autoLoadModels: true,
       synchronize: true,
@@ -52,6 +55,7 @@ import { Booking } from './bookings/bookings.model';
     TypesModule,
     FilesModule,
     BookingsModule,
+    ContractsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

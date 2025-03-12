@@ -11,6 +11,7 @@ import { UserRoles } from '../roles/user-roles.model';
 import { Role } from '../roles/roles.model';
 import { Property } from '../properties/properties.model';
 import { Booking } from '../bookings/bookings.model';
+import { Contract } from '../contracts/contracts.model';
 
 interface UserCreationAttrs {
   email: string;
@@ -75,4 +76,7 @@ export class User extends Model<User, UserCreationAttrs> {
 
   @HasMany(() => Booking)
   bookings: Booking[];
+
+  @HasMany(() => Contract)
+  contracts: Contract[];
 }

@@ -2,12 +2,6 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateBookingDto {
   @ApiProperty({
-    example: 'confirmed',
-    description: 'status of the booking',
-  })
-  readonly status: string;
-
-  @ApiProperty({
     example: '11.03.2025',
     description: 'Start date of the booking',
   })
