@@ -12,6 +12,7 @@ import { Role } from '../roles/roles.model';
 import { Property } from '../properties/properties.model';
 import { Booking } from '../bookings/bookings.model';
 import { Contract } from '../contracts/contracts.model';
+import { Favourite } from '../favourites/favourites.model';
 
 interface UserCreationAttrs {
   email: string;
@@ -79,4 +80,7 @@ export class User extends Model<User, UserCreationAttrs> {
 
   @HasMany(() => Contract)
   contracts: Contract[];
+
+  @HasMany(() => Favourite)
+  favourites: Favourite[];
 }

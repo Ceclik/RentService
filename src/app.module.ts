@@ -22,6 +22,8 @@ import { Booking } from './bookings/bookings.model';
 import { ContractsModule } from './contracts/contracts.module';
 import { Contract } from './contracts/contracts.model';
 import { ScheduleModule } from '@nestjs/schedule';
+import { FavouritesModule } from './favourites/favourites.module';
+import { Favourite } from './favourites/favourites.model';
 
 @Module({
   imports: [
@@ -46,6 +48,7 @@ import { ScheduleModule } from '@nestjs/schedule';
         PropertyImage,
         Booking,
         Contract,
+        Favourite,
       ],
       autoLoadModels: true,
       synchronize: true,
@@ -58,6 +61,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     BookingsModule,
     ContractsModule,
     ScheduleModule.forRoot(),
+    FavouritesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
