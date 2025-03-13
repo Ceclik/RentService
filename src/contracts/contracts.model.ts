@@ -58,9 +58,9 @@ export class Contract extends Model<Contract, ContractCreationAttrs> {
   @Column({ type: DataType.INTEGER, allowNull: false })
   clientId: number;
 
-  @BelongsTo(() => Booking)
+  @BelongsTo(() => Booking, { onDelete: 'CASCADE' })
   booking: Booking;
 
-  @BelongsTo(() => User)
+  @BelongsTo(() => User, { onDelete: 'CASCADE' })
   user: User;
 }

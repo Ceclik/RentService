@@ -52,12 +52,12 @@ export class Review extends Model<Review, ReviewCreationAttrs> {
   @Column({ type: DataType.INTEGER, allowNull: false })
   clientId: number;
 
-  @BelongsTo(() => Property)
+  @BelongsTo(() => Property, { onDelete: 'CASCADE' })
   property: Property;
 
   @BelongsTo(() => User, { onDelete: 'CASCADE' })
   user: User;
 
-  @HasMany(() => ReviewImage, { onDelete: 'CASCADE' })
+  @HasMany(() => ReviewImage)
   images: ReviewImage[];
 }

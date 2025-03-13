@@ -72,8 +72,8 @@ export class Property extends Model<Property, PropertyCreationAttrs> {
   @HasMany(() => PropertyImage)
   propertyImages: PropertyImage[];
 
-  @HasOne(() => Booking)
-  booking: Booking;
+  @HasMany(() => Booking)
+  bookings: Booking[];
 
   @HasMany(() => Favourite)
   favourites: Favourite[];

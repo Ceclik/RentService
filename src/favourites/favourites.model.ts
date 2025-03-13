@@ -34,9 +34,9 @@ export class Favourite extends Model<Favourite, FavouriteCreationAttrs> {
   @Column({ type: DataType.INTEGER, allowNull: false })
   clientId: number;
 
-  @BelongsTo(() => Property)
+  @BelongsTo(() => Property, { onDelete: 'CASCADE' })
   property: Property;
 
-  @BelongsTo(() => User)
+  @BelongsTo(() => User, { onDelete: 'CASCADE' })
   user: User;
 }

@@ -59,10 +59,10 @@ export class Booking extends Model<Booking, BookingCreationAttrs> {
   @Column({ type: DataType.INTEGER, allowNull: false })
   propertyId: number;
 
-  @BelongsTo(() => User)
+  @BelongsTo(() => User, { onDelete: 'CASCADE' })
   user: User;
 
-  @BelongsTo(() => Property)
+  @BelongsTo(() => Property, { onDelete: 'CASCADE' })
   property: Property;
 
   @HasOne(() => Contract)
