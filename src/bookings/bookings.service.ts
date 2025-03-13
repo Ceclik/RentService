@@ -71,7 +71,6 @@ export class BookingsService {
   async getAllBookings() {
     try {
       const bookings = await this.bookingsRepository.findAll({
-        where: { status: 'confirmed' },
         include: { all: true },
       });
       if (!bookings)

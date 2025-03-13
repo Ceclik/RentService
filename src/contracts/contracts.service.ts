@@ -1,4 +1,8 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { Contract } from './contracts.model';
 import { InjectModel } from '@nestjs/sequelize';
 import { Booking } from '../bookings/bookings.model';
@@ -14,6 +18,15 @@ export class ContractsService {
     @InjectModel(Property) private propertyRepository: typeof Property,
   ) {}
 
+  private catchException(e: Error) {
+    if (e instanceof BadRequestException)
+      throw new BadRequestException(e.message);
+    else {
+      console.log(e);
+      throw new InternalServerErrorException();
+    }
+  }
+
   private calculateTotalAmount(
     startDate: Date,
     endDate: Date,
@@ -28,6 +41,27 @@ export class ContractsService {
     }
 
     return days * pricePerDay;
+  }
+
+  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
+  async closeContract() {
+    try {
+      const today = new Date();
+      const contracts = await this.contractsRepository.findAll({
+        include: [
+          {
+            model: Booking,
+            where: { endDate: today },
+          },
+        ],
+      });
+
+      for (const contract of contracts) {
+        await contract.update({ status: 'closed' });
+      }
+    } catch (e) {
+      this.catchException(e);
+    }
   }
 
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
@@ -63,6 +97,64 @@ export class ContractsService {
     } catch (e) {
       console.log(e);
       throw new InternalServerErrorException(e.message);
+    }
+  }
+
+  async confirmContract(id: number) {
+    try {
+      const contractToConfirm = await this.contractsRepository.findByPk(id);
+      if (!contractToConfirm)
+        throw new BadRequestException('There is no such contract!');
+
+      await contractToConfirm.update({ status: 'confirmed' });
+      return contractToConfirm;
+    } catch (e) {
+      this.catchException(e);
+    }
+  }
+
+  async getAllOfClient(clientId: number) {
+    try {
+      const contracts = await this.contractsRepository.findAll({
+        where: { clientId },
+      });
+      if (contracts.length === 0)
+        return JSON.stringify('This client has no contracts');
+      return contracts;
+    } catch (e) {
+      this.catchException(e);
+    }
+  }
+
+  async getAllOfOwner(ownerId: number) {
+    try {
+      const contracts = await this.contractsRepository.findAll({
+        where: { ownerId },
+      });
+      if (contracts.length === 0)
+        return JSON.stringify('This owner has no contracts');
+      return contracts;
+    } catch (e) {
+      this.catchException(e);
+    }
+  }
+
+  async getAllOfProperty(propertyId: number) {
+    try {
+      const contracts = await this.contractsRepository.findAll({
+        include: [
+          {
+            model: Booking,
+            where: { propertyId },
+          },
+        ],
+      });
+
+      if (contracts.length === 0)
+        return JSON.stringify('This property has no contracts');
+      return contracts;
+    } catch (e) {
+      this.catchException(e);
     }
   }
 }

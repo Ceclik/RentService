@@ -4,7 +4,8 @@ import {
   Delete,
   Get,
   Param,
-  Post, Put,
+  Post,
+  Put,
   UseGuards,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -87,7 +88,7 @@ export class BookingsController {
   @ApiResponse({ status: 200, type: [Booking] })
   @Roles('CLIENT', 'ADMIN', 'OWNER')
   @UseGuards(RolesAuthGuard)
-  @Get('/allActiveBookingsOfProperty/:propertyId')
+  @Get('/allActiveOfProperty/:propertyId')
   getAllActiveBookingsOfProperty(@Param('propertyId') propertyId: number) {
     return this.bookingsService.getAllActiveBookingsOfProperty(propertyId);
   }
@@ -98,7 +99,7 @@ export class BookingsController {
   @ApiResponse({ status: 200, type: [Booking] })
   @Roles('ADMIN', 'OWNER')
   @UseGuards(RolesAuthGuard)
-  @Get('/allBookingsOfProperty/:propertyId')
+  @Get('/allOfProperty/:propertyId')
   getAllBookingsOfProperty(@Param('propertyId') propertyId: number) {
     return this.bookingsService.getAllBookingsOfProperty(propertyId);
   }
