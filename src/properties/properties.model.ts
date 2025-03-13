@@ -15,6 +15,7 @@ import { Description } from '../descriptions/descriptions.model';
 import { PropertyImage } from '../descriptions/property-images.model';
 import { Booking } from '../bookings/bookings.model';
 import { Favourite } from '../favourites/favourites.model';
+import { Review } from '../reviews/rewiews.model';
 
 interface PropertyCreationAttrs {
   title: string;
@@ -76,4 +77,7 @@ export class Property extends Model<Property, PropertyCreationAttrs> {
 
   @HasMany(() => Favourite)
   favourites: Favourite[];
+
+  @HasMany(() => Review)
+  reviews: Review[];
 }

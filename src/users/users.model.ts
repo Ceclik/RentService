@@ -13,6 +13,7 @@ import { Property } from '../properties/properties.model';
 import { Booking } from '../bookings/bookings.model';
 import { Contract } from '../contracts/contracts.model';
 import { Favourite } from '../favourites/favourites.model';
+import { Review } from '../reviews/rewiews.model';
 
 interface UserCreationAttrs {
   email: string;
@@ -83,4 +84,7 @@ export class User extends Model<User, UserCreationAttrs> {
 
   @HasMany(() => Favourite)
   favourites: Favourite[];
+
+  @HasMany(() => Review)
+  reviews: Review[];
 }
