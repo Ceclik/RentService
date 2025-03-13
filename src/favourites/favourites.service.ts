@@ -6,6 +6,7 @@ import {
 import { InjectModel } from '@nestjs/sequelize';
 import { Favourite } from './favourites.model';
 import { Property } from '../properties/properties.model';
+import { PropertyImage } from '../descriptions/property-images.model';
 
 @Injectable()
 export class FavouritesService {
@@ -24,7 +25,7 @@ export class FavouritesService {
     try {
       return await this.favouriteRepository.findAll({
         where: { clientId },
-        include: [{ model: Property }],
+        include: [{ model: Property, include: [{ model: PropertyImage }] }],
       });
     } catch (e) {
       this.catchError(e);
