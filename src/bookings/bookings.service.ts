@@ -8,12 +8,14 @@ import { Booking } from './bookings.model';
 import { CreateBookingDto } from './dto/create-booking.dto';
 import { Property } from '../properties/properties.model';
 import { Op } from 'sequelize';
+import { AnalyticsService } from '../analytics/analytics.service';
 
 @Injectable()
 export class BookingsService {
   constructor(
     @InjectModel(Booking) private bookingsRepository: typeof Booking,
     @InjectModel(Property) private propertyRepository: typeof Property,
+    private analyticsService: AnalyticsService,
   ) {}
 
   private catchError(e: Error) {
@@ -82,16 +84,28 @@ export class BookingsService {
   }
 
   async createBooking(dto: CreateBookingDto) {
+    const transaction = await this.bookingsRepository.sequelize?.transaction();
     try {
       const { startDate, endDate } = await this.validateBookingDates(dto);
 
-      return await this.bookingsRepository.create({
-        startDate,
-        endDate,
-        propertyId: dto.propertyId,
-        clientId: dto.clientId,
-      });
+      const createdBooking = await this.bookingsRepository.create(
+        {
+          startDate,
+          endDate,
+          propertyId: dto.propertyId,
+          clientId: dto.clientId,
+        },
+        { transaction },
+      );
+      await this.analyticsService.increaseBookings(
+        createdBooking.propertyId,
+        transaction,
+      );
+      if (transaction) await transaction?.commit();
+
+      return createdBooking;
     } catch (e) {
+      await transaction?.rollback();
       if (e instanceof BadRequestException)
         throw new BadRequestException(e.message);
       else {

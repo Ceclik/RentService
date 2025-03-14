@@ -10,6 +10,8 @@ import { AuthModule } from '../auth/auth.module';
 import { User } from '../users/users.model';
 import { FilesModule } from '../files/files.module';
 import { PropertyImage } from '../descriptions/property-images.model';
+import { AnalyticsModule } from '../analytics/analytics.module';
+import { Analytics } from '../analytics/analytics.model';
 
 @Module({
   controllers: [PropertiesController],
@@ -21,10 +23,12 @@ import { PropertyImage } from '../descriptions/property-images.model';
       User,
       Type,
       PropertyImage,
+      Analytics,
     ]),
     TypesModule,
     forwardRef(() => AuthModule),
     FilesModule,
+    AnalyticsModule,
   ],
   exports: [PropertiesService],
 })

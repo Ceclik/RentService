@@ -9,6 +9,7 @@ import { Booking } from '../bookings/bookings.model';
 import { addDays, differenceInDays, startOfDay } from 'date-fns';
 import { Property } from '../properties/properties.model';
 import { Cron, CronExpression } from '@nestjs/schedule';
+import { AnalyticsService } from '../analytics/analytics.service';
 
 @Injectable()
 export class ContractsService {
@@ -16,6 +17,7 @@ export class ContractsService {
     @InjectModel(Contract) private contractsRepository: typeof Contract,
     @InjectModel(Booking) private bookingRepository: typeof Booking,
     @InjectModel(Property) private propertyRepository: typeof Property,
+    private analyticsService: AnalyticsService,
   ) {}
 
   private catchException(e: Error) {
@@ -101,12 +103,20 @@ export class ContractsService {
   }
 
   async confirmContract(id: number) {
+    const transaction = await this.contractsRepository.sequelize?.transaction();
     try {
-      const contractToConfirm = await this.contractsRepository.findByPk(id);
+      const contractToConfirm = await this.contractsRepository.findByPk(id, {
+        include: { model: Booking },
+      });
       if (!contractToConfirm)
         throw new BadRequestException('There is no such contract!');
 
-      await contractToConfirm.update({ status: 'confirmed' });
+      await contractToConfirm.update({ status: 'confirmed' }, { transaction });
+      await this.analyticsService.countRevenue(
+        contractToConfirm.booking.propertyId,
+        contractToConfirm.totalPrice,
+        transaction,
+      );
       return contractToConfirm;
     } catch (e) {
       this.catchException(e);

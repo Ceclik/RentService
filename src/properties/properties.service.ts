@@ -10,6 +10,8 @@ import { Type } from '../types/types.model';
 import { ReceivePropertyDto } from './dto/receive-property.dto';
 import { PropertyImage } from '../descriptions/property-images.model';
 import { FilesService } from '../files/files.service';
+import { AnalyticsService } from '../analytics/analytics.service';
+import { Analytics } from '../analytics/analytics.model';
 
 @Injectable()
 export class PropertiesService {
@@ -18,7 +20,9 @@ export class PropertiesService {
     @InjectModel(Description) private descriptionRepository: typeof Description,
     @InjectModel(Type) private typesRepository: typeof Type,
     @InjectModel(PropertyImage) private imagesRepository: typeof PropertyImage,
+    @InjectModel(Analytics) private analyticsRepository: typeof Analytics,
     private filesService: FilesService,
+    private analyticsService: AnalyticsService,
   ) {}
 
   async createProperty(dto: ReceivePropertyDto, ownerId: number, images) {
@@ -65,6 +69,11 @@ export class PropertiesService {
         );
       }
 
+      await this.analyticsRepository.create(
+        { propertyId: createdProperty.id },
+        { transaction },
+      );
+
       if (transaction) await transaction.commit();
       return createdProperty;
     } catch (e) {
@@ -75,7 +84,9 @@ export class PropertiesService {
   }
 
   async getAllProperties() {
-    return await this.propertyRepository.findAll({ include: { all: true } });
+    return await this.propertyRepository.findAll({
+      include: { model: PropertyImage },
+    });
   }
 
   async deleteProperty(id: number) {
@@ -86,6 +97,7 @@ export class PropertiesService {
   async getOneProperty(id: number) {
     const property = await this.propertyRepository.findByPk(id);
     if (!property) return JSON.stringify('There is no such property');
+    await this.analyticsService.increaseViews(id);
     return property;
   }
 

@@ -27,6 +27,8 @@ import { Favourite } from './favourites/favourites.model';
 import { ReviewsModule } from './reviews/reviews.module';
 import { Review } from './reviews/rewiews.model';
 import { ReviewImage } from './reviews/review-images.model';
+import { AnalyticsModule } from './analytics/analytics.module';
+import { Analytics } from './analytics/analytics.model';
 
 @Module({
   imports: [
@@ -54,6 +56,7 @@ import { ReviewImage } from './reviews/review-images.model';
         Favourite,
         Review,
         ReviewImage,
+        Analytics,
       ],
       autoLoadModels: true,
       synchronize: true,
@@ -68,6 +71,7 @@ import { ReviewImage } from './reviews/review-images.model';
     ScheduleModule.forRoot(),
     FavouritesModule,
     ReviewsModule,
+    AnalyticsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

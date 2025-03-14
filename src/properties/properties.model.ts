@@ -16,6 +16,7 @@ import { PropertyImage } from '../descriptions/property-images.model';
 import { Booking } from '../bookings/bookings.model';
 import { Favourite } from '../favourites/favourites.model';
 import { Review } from '../reviews/rewiews.model';
+import { Analytics } from '../analytics/analytics.model';
 
 interface PropertyCreationAttrs {
   title: string;
@@ -80,4 +81,7 @@ export class Property extends Model<Property, PropertyCreationAttrs> {
 
   @HasMany(() => Review)
   reviews: Review[];
+
+  @HasOne(() => Analytics)
+  analytic: Analytics;
 }

@@ -7,13 +7,16 @@ import { User } from '../users/users.model';
 import { AuthModule } from '../auth/auth.module';
 import { Booking } from './bookings.model';
 import { Contract } from '../contracts/contracts.model';
+import { AnalyticsModule } from '../analytics/analytics.module';
+import { Analytics } from '../analytics/analytics.model';
 
 @Module({
   controllers: [BookingsController],
   providers: [BookingsService],
   imports: [
-    SequelizeModule.forFeature([Property, User, Booking, Contract]),
-    forwardRef(() => AuthModule),
+    SequelizeModule.forFeature([Property, User, Booking, Contract, Analytics]),
+    AuthModule,
+    AnalyticsModule,
   ],
   exports: [BookingsService],
 })
