@@ -29,15 +29,19 @@ import { Review } from './reviews/rewiews.model';
 import { ReviewImage } from './reviews/review-images.model';
 import { AnalyticsModule } from './analytics/analytics.module';
 import { Analytics } from './analytics/analytics.model';
-import { ChatGateway } from './chat/chat.gateway';
 import { ChatModule } from './chat/chat.module';
 import { Message } from './chat/messages.model';
 import { Chat } from './chat/chat.model';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import * as path from 'path';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       envFilePath: `.env`,
+    }),
+    ServeStaticModule.forRoot({
+      rootPath: path.resolve(__dirname, 'static'),
     }),
     UsersModule,
     SequelizeModule.forRoot({
