@@ -29,6 +29,10 @@ import { Review } from './reviews/rewiews.model';
 import { ReviewImage } from './reviews/review-images.model';
 import { AnalyticsModule } from './analytics/analytics.module';
 import { Analytics } from './analytics/analytics.model';
+import { ChatGateway } from './chat/chat.gateway';
+import { ChatModule } from './chat/chat.module';
+import { Message } from './chat/messages.model';
+import { Chat } from './chat/chat.model';
 
 @Module({
   imports: [
@@ -57,6 +61,8 @@ import { Analytics } from './analytics/analytics.model';
         Review,
         ReviewImage,
         Analytics,
+        Message,
+        Chat,
       ],
       autoLoadModels: true,
       synchronize: true,
@@ -72,6 +78,7 @@ import { Analytics } from './analytics/analytics.model';
     FavouritesModule,
     ReviewsModule,
     AnalyticsModule,
+    ChatModule,
   ],
   controllers: [AppController],
   providers: [AppService],
