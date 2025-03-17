@@ -1,4 +1,23 @@
 services:
+  main:
+    container_name: main
+    build:
+      context: .
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+      - /app/node_modules
+    ports:
+      - "7000:7000"
+      - "9229:9229"
+    command:
+      - npm run start:dev
+    depends_on:
+      - postgres
+    restart: always
+
+
   postgres:
     container_name: postgres
     image: postgres:15.2-alpine
