@@ -19,7 +19,7 @@ import { CreateReviewDto } from './dto/create-review.dto';
 import { FilesInterceptor } from '@nestjs/platform-express';
 
 @ApiTags('Operations with reviews on properties')
-@Controller('reviews')
+@Controller('api/reviews')
 export class ReviewsController {
   constructor(private reviewsService: ReviewsService) {}
 

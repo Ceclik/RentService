@@ -1,6 +1,4 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { UsersModule } from '@modules/users/users.module';
 import { SequelizeModule } from '@nestjs/sequelize';
@@ -84,7 +82,5 @@ import * as path from 'path';
     AnalyticsModule,
     ChatModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
 })
 export class AppModule {}

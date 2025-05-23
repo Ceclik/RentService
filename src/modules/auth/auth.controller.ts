@@ -14,7 +14,7 @@ import { ValidationPipe } from '@common/pipes/validation.pipe';
 import { GoogleAuthGuard } from '@common/guards/google-auth/google-auth.guard';
 
 @ApiTags('Authorization operations')
-@Controller('auth')
+@Controller('api/auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
 

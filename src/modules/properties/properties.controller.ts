@@ -20,7 +20,7 @@ import { ReceivePropertyDto } from './dto/receive-property.dto';
 import { FilesInterceptor } from '@nestjs/platform-express';
 
 @ApiTags('Operations with properties')
-@Controller('properties')
+@Controller('api/properties')
 export class PropertiesController {
   constructor(private propertiesService: PropertiesService) {}
 

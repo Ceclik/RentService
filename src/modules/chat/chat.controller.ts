@@ -6,7 +6,7 @@ import { Chat } from './chat.model';
 import { Message } from './messages.model';
 
 @ApiTags('Operations with chat')
-@Controller('chat')
+@Controller('api/chat')
 export class ChatController {
   constructor(private chatService: ChatService) {}
 

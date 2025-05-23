@@ -15,7 +15,7 @@ import { CreateTypeDto } from './dto/create-type.dto';
 import { TypesService } from './types.service';
 import { JwtAuthGuard } from '@common/guards/jwt-auth.guard';
 
-@Controller('types')
+@Controller('api/types')
 export class TypesController {
   constructor(private typesService: TypesService) {}
 

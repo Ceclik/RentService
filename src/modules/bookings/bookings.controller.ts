@@ -16,7 +16,7 @@ import { Booking } from './bookings.model';
 import { CreateBookingDto } from './dto/create-booking.dto';
 
 @ApiTags('Operations with bookings')
-@Controller('bookings')
+@Controller('api/bookings')
 export class BookingsController {
   constructor(private bookingsService: BookingsService) {}
 

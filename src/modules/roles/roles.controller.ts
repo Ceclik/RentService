@@ -15,7 +15,7 @@ import { Roles } from '../auth/roles-auth.decorator';
 import { RolesAuthGuard } from '@common/guards/roles-auth.guard';
 
 @ApiTags('Operations with users roles')
-@Controller('roles')
+@Controller('api/roles')
 export class RolesController {
   constructor(private rolesService: RolesService) {}
 

@@ -6,7 +6,7 @@ import { AnalyticsService } from './analytics.service';
 import { Analytics } from './analytics.model';
 
 @ApiTags('Operations with analytics')
-@Controller('analytics')
+@Controller('api/analytics')
 export class AnalyticsController {
   constructor(private analyticsService: AnalyticsService) {}
 

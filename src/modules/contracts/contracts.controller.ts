@@ -6,7 +6,7 @@ import { ContractsService } from './contracts.service';
 import { Contract } from './contracts.model';
 
 @ApiTags('Operations with contracts')
-@Controller('contracts')
+@Controller('api/contracts')
 export class ContractsController {
   constructor(private contractsService: ContractsService) {}
 

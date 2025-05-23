@@ -14,7 +14,7 @@ import { FavouritesService } from './favourites.service';
 import { Favourite } from './favourites.model';
 
 @ApiTags('Operations with list of favourite properties')
-@Controller('favourites')
+@Controller('api/favourites')
 export class FavouritesController {
   constructor(private favouritesService: FavouritesService) {}
 
