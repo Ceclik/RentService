@@ -5,8 +5,8 @@ import { UsersModule } from '../users/users.module';
 import { JwtModule } from '@nestjs/jwt';
 import * as process from 'node:process';
 import { ConfigModule } from '@nestjs/config';
-import googleOauthConfig from './config/google-oauth.config';
-import { GoogleStrategy } from '../strategies/google.strategy';
+import googleOauthConfig from 'config/google-oauth.config';
+import { GoogleStrategy } from '@common/strategies/google.strategy';
 
 @Module({
   controllers: [AuthController],

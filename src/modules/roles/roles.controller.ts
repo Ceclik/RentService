@@ -12,7 +12,7 @@ import { RolesService } from './roles.service';
 import { Role } from './roles.model';
 import { CreateRoleDto } from './dto/create-role-dto';
 import { Roles } from '../auth/roles-auth.decorator';
-import { RolesAuthGuard } from '../auth/guards/roles-auth.guard';
+import { RolesAuthGuard } from '@common/guards/roles-auth.guard';
 
 @ApiTags('Operations with users roles')
 @Controller('roles')

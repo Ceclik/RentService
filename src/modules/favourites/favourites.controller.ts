@@ -1,7 +1,15 @@
-import { Controller, Delete, Get, Param, Post, Put, Req, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Roles } from '../auth/roles-auth.decorator';
-import { RolesAuthGuard } from '../auth/guards/roles-auth.guard';
+import { RolesAuthGuard } from '@common/guards/roles-auth.guard';
 import { FavouritesService } from './favourites.service';
 import { Favourite } from './favourites.model';
 

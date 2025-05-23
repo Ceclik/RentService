@@ -1,11 +1,19 @@
-import { Body, Controller, Delete, Get, Param, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { Property } from '../properties/properties.model';
 import { Roles } from '../auth/roles-auth.decorator';
-import { RolesAuthGuard } from '../auth/guards/roles-auth.guard';
+import { RolesAuthGuard } from '@common/guards/roles-auth.guard';
 import { CreateTypeDto } from './dto/create-type.dto';
 import { TypesService } from './types.service';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { JwtAuthGuard } from '@common/guards/jwt-auth.guard';
 
 @Controller('types')
 export class TypesController {

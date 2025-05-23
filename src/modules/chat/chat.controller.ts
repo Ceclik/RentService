@@ -1,9 +1,7 @@
-import { Controller, Delete, Get, Param, Post, Put, Req, UseGuards } from '@nestjs/common';
+import { Controller, Delete, Get, Param, UseGuards } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { Roles } from '../auth/roles-auth.decorator';
-import { RolesAuthGuard } from '../auth/guards/roles-auth.guard';
 import { ChatService } from './chat.service';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { JwtAuthGuard } from '@common/guards/jwt-auth.guard';
 import { Chat } from './chat.model';
 import { Message } from './messages.model';
 

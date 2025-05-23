@@ -1,7 +1,7 @@
 import { Controller, Get, Param, Put, UseGuards } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Roles } from '../auth/roles-auth.decorator';
-import { RolesAuthGuard } from '../auth/guards/roles-auth.guard';
+import { RolesAuthGuard } from '@common/guards/roles-auth.guard';
 import { ContractsService } from './contracts.service';
 import { Contract } from './contracts.model';
 

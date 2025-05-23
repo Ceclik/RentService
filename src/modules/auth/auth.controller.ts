@@ -10,8 +10,8 @@ import {
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { AuthService } from './auth.service';
-import { ValidationPipe } from '../pipes/validation.pipe';
-import { GoogleAuthGuard } from './guards/google-auth/google-auth.guard';
+import { ValidationPipe } from '@common/pipes/validation.pipe';
+import { GoogleAuthGuard } from '@common/guards/google-auth/google-auth.guard';
 
 @ApiTags('Authorization operations')
 @Controller('auth')

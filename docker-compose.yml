@@ -1,4 +1,19 @@
 services:
+  postgres:
+    container_name: postgres
+    image: postgres:15.2-alpine
+    environment:
+      - POSTGRES_PORT=${POSTGRES_PORT}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    env_file:
+      - .env
+    volumes:
+      - postgres_db:/var/lib/postgresql/data/
+    ports:
+      - "${POSTGRES_PORT}:${POSTGRES_PORT}"
+
   main:
     container_name: main
     build:
@@ -14,22 +29,6 @@ services:
     depends_on:
       - postgres
     restart: always
-
-
-  postgres:
-    container_name: postgres
-    image: postgres:15.2-alpine
-    environment:
-      - POSTGRES_PORT=${POSTGRES_PORT}
-      - POSTGRES_DB=${POSTGRES_DB}
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-    env_file:
-      - .env
-    volumes:
-      - postgres_db:/var/lib/postgresql/data/
-    ports:
-      - "${POSTGRES_PORT}:${POSTGRES_PORT}"
 
 volumes:
   postgres_db:

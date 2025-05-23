@@ -15,7 +15,7 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { PropertiesService } from './properties.service';
 import { Property } from './properties.model';
 import { Roles } from '../auth/roles-auth.decorator';
-import { RolesAuthGuard } from '../auth/guards/roles-auth.guard';
+import { RolesAuthGuard } from '@common/guards/roles-auth.guard';
 import { ReceivePropertyDto } from './dto/receive-property.dto';
 import { FilesInterceptor } from '@nestjs/platform-express';
 
