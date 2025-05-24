@@ -9,10 +9,11 @@ import { Booking } from './bookings.model';
 import { Contract } from '../contracts/contracts.model';
 import { AnalyticsModule } from '../analytics/analytics.module';
 import { Analytics } from '../analytics/analytics.model';
+import { BookingsRepository } from '@modules/bookings/bookings.repository';
 
 @Module({
   controllers: [BookingsController],
-  providers: [BookingsService],
+  providers: [BookingsService, BookingsRepository],
   imports: [
     SequelizeModule.forFeature([Property, User, Booking, Contract, Analytics]),
     AuthModule,
