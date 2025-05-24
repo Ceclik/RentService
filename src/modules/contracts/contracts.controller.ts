@@ -1,11 +1,17 @@
 import { Controller, Get, Param, Put, UseGuards } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { Roles } from '@common/decorators/roles-auth.decorator';
 import { RolesAuthGuard } from '@common/guards/roles-auth.guard';
 import { ContractsService } from './contracts.service';
 import { Contract } from './contracts.model';
 
 @ApiTags('Operations with contracts')
+@ApiBearerAuth('access-token')
 @Controller('api/contracts')
 export class ContractsController {
   constructor(private contractsService: ContractsService) {}

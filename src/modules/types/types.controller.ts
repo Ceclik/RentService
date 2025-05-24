@@ -7,7 +7,12 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { Property } from '../properties/properties.model';
 import { Roles } from '@common/decorators/roles-auth.decorator';
 import { RolesAuthGuard } from '@common/guards/roles-auth.guard';
@@ -15,6 +20,8 @@ import { CreateTypeDto } from './dto/create-type.dto';
 import { TypesService } from './types.service';
 import { JwtAuthGuard } from '@common/guards/jwt-auth.guard';
 
+@ApiTags('Operations with types of properties')
+@ApiBearerAuth('access-token')
 @Controller('api/types')
 export class TypesController {
   constructor(private typesService: TypesService) {}

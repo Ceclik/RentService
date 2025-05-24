@@ -42,9 +42,6 @@ export class AuthController {
   @Get('google/login')
   googleLogin() {}
 
-  @ApiOperation({
-    summary: '?',
-  })
   @ApiResponse({ status: 200, type: String })
   @UseGuards(GoogleAuthGuard)
   @Get('google/callback')

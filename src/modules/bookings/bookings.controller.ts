@@ -8,7 +8,7 @@ import {
   Put,
   UseGuards,
 } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Roles } from '@common/decorators/roles-auth.decorator';
 import { RolesAuthGuard } from '@common/guards/roles-auth.guard';
 import { BookingsService } from './bookings.service';
@@ -16,6 +16,7 @@ import { Booking } from './bookings.model';
 import { CreateBookingDto } from './dto/create-booking.dto';
 
 @ApiTags('Operations with bookings')
+@ApiBearerAuth('access-token')
 @Controller('api/bookings')
 export class BookingsController {
   constructor(private bookingsService: BookingsService) {}

@@ -10,7 +10,7 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Roles } from '@common/decorators/roles-auth.decorator';
 import { RolesAuthGuard } from '@common/guards/roles-auth.guard';
 import { ReviewsService } from './reviews.service';
@@ -19,6 +19,7 @@ import { CreateReviewDto } from './dto/create-review.dto';
 import { FilesInterceptor } from '@nestjs/platform-express';
 
 @ApiTags('Operations with reviews on properties')
+@ApiBearerAuth('access-token')
 @Controller('api/reviews')
 export class ReviewsController {
   constructor(private reviewsService: ReviewsService) {}

@@ -10,7 +10,7 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { PropertiesService } from './properties.service';
 import { Property } from './properties.model';
 import { Roles } from '@common/decorators/roles-auth.decorator';
@@ -19,14 +19,71 @@ import { ReceivePropertyDto } from './dto/receive-property.dto';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { context, CONTEXT_KEYS } from '@common/cls/request-context';
 import { User } from '@modules/users/users.model';
+import { DataType } from 'sequelize-typescript';
 
 @ApiTags('Operations with properties')
+@ApiBearerAuth('access-token')
 @Controller('api/properties')
 export class PropertiesController {
   constructor(private propertiesService: PropertiesService) {}
 
   @ApiOperation({ summary: 'Creates properties' })
   @ApiResponse({ status: 200, type: Property })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        title: {
+          type: 'string',
+          description: 'Name of the property in ad',
+        },
+        location: {
+          type: 'string',
+          description: 'Location of the property',
+        },
+        price: {
+          type: 'number',
+          description: 'Price for the month of rent',
+        },
+        typeId: {
+          type: 'number',
+          description: 'Id of type of the property',
+        },
+        descriptions: {
+          type: 'array',
+          description: 'Descriptions of the property',
+          items: {
+            type: 'object',
+            properties: {
+              title: {
+                type: 'string',
+                description: 'Title of the description item',
+              },
+              description: {
+                type: 'string',
+                description: 'Description text',
+              },
+            },
+            required: ['title', 'description'],
+          },
+        },
+        image: {
+          type: 'string',
+          format: 'binary',
+          description: 'Image file of the property',
+        },
+      },
+      required: [
+        'title',
+        'location',
+        'price',
+        'typeId',
+        'descriptions',
+        'image',
+      ],
+    },
+  })
   @Roles('ADMIN', 'OWNER')
   @UseGuards(RolesAuthGuard)
   @Post('/add')

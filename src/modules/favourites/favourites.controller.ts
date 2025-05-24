@@ -6,7 +6,12 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { Roles } from '@common/decorators/roles-auth.decorator';
 import { RolesAuthGuard } from '@common/guards/roles-auth.guard';
 import { FavouritesService } from './favourites.service';
@@ -15,6 +20,7 @@ import { User } from '@modules/users/users.model';
 import { context, CONTEXT_KEYS } from '@common/cls/request-context';
 
 @ApiTags('Operations with list of favourite properties')
+@ApiBearerAuth('access-token')
 @Controller('api/favourites')
 export class FavouritesController {
   constructor(private favouritesService: FavouritesService) {}
