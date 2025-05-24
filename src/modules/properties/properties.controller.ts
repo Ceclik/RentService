@@ -10,7 +10,14 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiConsumes,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { PropertiesService } from './properties.service';
 import { Property } from './properties.model';
 import { Roles } from '@common/decorators/roles-auth.decorator';
@@ -19,7 +26,6 @@ import { ReceivePropertyDto } from './dto/receive-property.dto';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { context, CONTEXT_KEYS } from '@common/cls/request-context';
 import { User } from '@modules/users/users.model';
-import { DataType } from 'sequelize-typescript';
 
 @ApiTags('Operations with properties')
 @ApiBearerAuth('access-token')

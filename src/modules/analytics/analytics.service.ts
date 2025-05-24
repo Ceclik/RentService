@@ -3,15 +3,12 @@ import {
   Injectable,
   InternalServerErrorException,
 } from '@nestjs/common';
-import { InjectModel } from '@nestjs/sequelize';
-import { Analytics } from './analytics.model';
 import { Transaction } from 'sequelize';
+import { AnalyticsRepository } from '@modules/analytics/analytics.Repository';
 
 @Injectable()
 export class AnalyticsService {
-  constructor(
-    @InjectModel(Analytics) private analyticsRepository: typeof Analytics,
-  ) {}
+  constructor(private analyticsRepository: AnalyticsRepository) {}
 
   private catchException(e: Error) {
     if (e instanceof BadRequestException)
@@ -22,9 +19,8 @@ export class AnalyticsService {
 
   async watchAnalytic(propertyId: number) {
     try {
-      const analytics = await this.analyticsRepository.findOne({
-        where: { propertyId },
-      });
+      const analytics =
+        await this.analyticsRepository.findOneByPropertyId(propertyId);
       if (!analytics)
         throw new BadRequestException('There is no such property');
 
@@ -36,21 +32,13 @@ export class AnalyticsService {
 
   async increaseViews(propertyId: number) {
     try {
-      const analytics = await this.analyticsRepository.findOne({
-        where: { propertyId },
-      });
+      const analytics =
+        await this.analyticsRepository.findOneByPropertyId(propertyId);
 
       if (!analytics)
         throw new BadRequestException('There is no such property');
 
-      await this.analyticsRepository.update(
-        {
-          views: analytics.views + 1,
-        },
-        {
-          where: { id: analytics.id },
-        },
-      );
+      await this.analyticsRepository.increaseViews(analytics);
       return analytics;
     } catch (e) {
       this.catchException(e);
@@ -62,25 +50,18 @@ export class AnalyticsService {
     transaction: Transaction | undefined,
   ) {
     try {
-      const analytics = await this.analyticsRepository.findOne({
-        where: { propertyId },
-      });
+      const analytics =
+        await this.analyticsRepository.findOneByPropertyId(propertyId);
 
       if (!analytics)
         throw new BadRequestException('There is no such property');
 
-      await this.analyticsRepository.update(
-        {
-          bookings: analytics.bookings + 1,
-        },
-        {
-          where: { id: analytics.id },
-          transaction,
-        },
-      );
+      if (transaction)
+        await this.analyticsRepository.increaseBookings(analytics, transaction);
       return analytics;
     } catch (e) {
       this.catchException(e);
+      await transaction?.rollback();
     }
   }
 
@@ -90,22 +71,18 @@ export class AnalyticsService {
     transaction: Transaction | undefined,
   ) {
     try {
-      const analytics = await this.analyticsRepository.findOne({
-        where: { propertyId },
-      });
+      const analytics =
+        await this.analyticsRepository.findOneByPropertyId(propertyId);
 
       if (!analytics)
         throw new BadRequestException('There is no such property');
 
-      await this.analyticsRepository.update(
-        {
-          revenue: analytics.revenue + bookingPrice,
-        },
-        {
-          where: { id: analytics.id },
+      if (transaction)
+        await this.analyticsRepository.countRevenue(
+          analytics,
+          bookingPrice,
           transaction,
-        },
-      );
+        );
       return analytics;
     } catch (e) {
       this.catchException(e);
