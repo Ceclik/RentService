@@ -3,25 +3,27 @@ import {
   ExecutionContext,
   ForbiddenException,
   Injectable,
-  UnauthorizedException,
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
-import { JwtService } from '@nestjs/jwt';
 import { Reflector } from '@nestjs/core';
 import { context as ctx, CONTEXT_KEYS } from '@common/cls/request-context';
+import { User } from '@modules/users/users.model';
+import { BaseGuard } from '@common/guards/base.guard';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
-export class RolesAuthGuard implements CanActivate {
+export class RolesAuthGuard extends BaseGuard implements CanActivate {
   constructor(
-    private jwtService: JwtService,
     private reflector: Reflector,
-  ) {}
+    protected jwtService: JwtService,
+  ) {
+    super(jwtService);
+  }
 
   canActivate(
     context: ExecutionContext,
   ): boolean | Promise<boolean> | Observable<boolean> {
     try {
-      const req = context.switchToHttp().getRequest();
       const requiredRoles: string = this.reflector.getAllAndOverride('roles', [
         context.getHandler(),
         context.getClass(),
@@ -29,30 +31,18 @@ export class RolesAuthGuard implements CanActivate {
       console.log('required roles type ' + requiredRoles);
       if (!requiredRoles) return true;
 
-      const authHeader = req.headers.authorization;
-      const bearer = authHeader.split(' ')[0];
-      const token = authHeader.split(' ')[1];
-
-      if (bearer !== 'Bearer' || !token) {
-        console.log('no bearer or token');
-        throw new UnauthorizedException({ message: 'User is not authorized!' });
-      }
-
-      const user = this.jwtService.verify(token);
-      if (user.password === '')
-        throw new UnauthorizedException({ message: 'User is not authorized!' });
-      ctx.set(CONTEXT_KEYS.USER, user);
-
-      const isAccessable = user.roles.some((role) =>
+      this.decodeToken(context);
+      const user: User = ctx.get(CONTEXT_KEYS.USER);
+      const isAccessible: boolean = user.roles.some((role) =>
         requiredRoles.includes(role.value),
       );
 
-      if (!isAccessable)
+      if (!isAccessible)
         throw new ForbiddenException({
           message: 'You do not have permission!',
         });
 
-      return isAccessable;
+      return isAccessible;
     } catch (err) {
       console.log(err);
       throw new ForbiddenException({ message: 'You do not have permission!' });
