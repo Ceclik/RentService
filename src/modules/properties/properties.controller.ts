@@ -6,7 +6,6 @@ import {
   Param,
   Post,
   Put,
-  Req,
   UploadedFiles,
   UseGuards,
   UseInterceptors,
@@ -14,10 +13,12 @@ import {
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { PropertiesService } from './properties.service';
 import { Property } from './properties.model';
-import { Roles } from '../auth/roles-auth.decorator';
+import { Roles } from '@common/decorators/roles-auth.decorator';
 import { RolesAuthGuard } from '@common/guards/roles-auth.guard';
 import { ReceivePropertyDto } from './dto/receive-property.dto';
 import { FilesInterceptor } from '@nestjs/platform-express';
+import { context, CONTEXT_KEYS } from '@common/cls/request-context';
+import { User } from '@modules/users/users.model';
 
 @ApiTags('Operations with properties')
 @Controller('api/properties')
@@ -30,8 +31,9 @@ export class PropertiesController {
   @UseGuards(RolesAuthGuard)
   @Post('/add')
   @UseInterceptors(FilesInterceptor('images'))
-  create(@Body() dto: ReceivePropertyDto, @Req() req, @UploadedFiles() images) {
-    const ownerId: number = req.user.id;
+  create(@Body() dto: ReceivePropertyDto, @UploadedFiles() images) {
+    const user: User = context.get(CONTEXT_KEYS.USER);
+    const ownerId: number = user.id;
     return this.propertiesService.createProperty(dto, ownerId, images);
   }
 
@@ -58,8 +60,9 @@ export class PropertiesController {
   @Roles('ADMIN', 'OWNER')
   @UseGuards(RolesAuthGuard)
   @Put('/update/:id')
-  update(@Body() dto: ReceivePropertyDto, @Req() req, @Param('id') id: number) {
-    const ownerId: number = req.user.id;
+  update(@Body() dto: ReceivePropertyDto, @Param('id') id: number) {
+    const user: User = context.get(CONTEXT_KEYS.USER);
+    const ownerId: number = user.id;
     return this.propertiesService.updateProperty(dto, ownerId, id);
   }
 

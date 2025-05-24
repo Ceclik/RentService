@@ -12,7 +12,7 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { User } from './users.model';
 import { JwtAuthGuard } from '@common/guards/jwt-auth.guard';
 import { BanUserDto } from './dto/ban-user.dto';
-import { Roles } from '../auth/roles-auth.decorator';
+import { Roles } from '@common/decorators/roles-auth.decorator';
 import { RolesAuthGuard } from '@common/guards/roles-auth.guard';
 import { AddUserRoleDto } from './dto/add-user-role.dto';
 

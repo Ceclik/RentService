@@ -2,10 +2,12 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import * as process from 'node:process';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { ContextMiddleware } from '@common/middlewares/context.middleware';
 
 async function bootstrap() {
   const PORT = process.env.PORT || 3000;
   const app = await NestFactory.create(AppModule);
+  app.use(new ContextMiddleware().use);
   const config = new DocumentBuilder()
     .setTitle('API for smart platform for real estate rental management')
     .setDescription(

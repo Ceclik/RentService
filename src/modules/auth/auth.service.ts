@@ -4,6 +4,7 @@ import { CreateUserDto } from '../users/dto/create-user.dto';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
 import { User } from '../users/users.model';
+import { context, CONTEXT_KEYS } from '@common/cls/request-context';
 
 @Injectable()
 export class AuthService {
@@ -23,8 +24,11 @@ export class AuthService {
     if (user.password === '' && user.oauth_provider === 'google')
       return this.generateToken(user);
     const arePasswordsEqual = await bcrypt.compare(dto.password, user.password);
-    if (arePasswordsEqual) return this.generateToken(user);
-    else throw new HttpException('Wrong password!', HttpStatus.BAD_REQUEST);
+    if (arePasswordsEqual) {
+      console.log(`user before setting to namespace: ${JSON.stringify(user)}`);
+      context.set(CONTEXT_KEYS.USER, user);
+      return this.generateToken(user);
+    } else throw new HttpException('Wrong password!', HttpStatus.BAD_REQUEST);
   }
 
   async register(dto: CreateUserDto) {

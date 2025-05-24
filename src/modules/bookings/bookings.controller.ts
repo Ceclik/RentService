@@ -9,7 +9,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { Roles } from '../auth/roles-auth.decorator';
+import { Roles } from '@common/decorators/roles-auth.decorator';
 import { RolesAuthGuard } from '@common/guards/roles-auth.guard';
 import { BookingsService } from './bookings.service';
 import { Booking } from './bookings.model';

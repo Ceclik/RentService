@@ -4,14 +4,15 @@ import {
   Get,
   Param,
   Post,
-  Req,
   UseGuards,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { Roles } from '../auth/roles-auth.decorator';
+import { Roles } from '@common/decorators/roles-auth.decorator';
 import { RolesAuthGuard } from '@common/guards/roles-auth.guard';
 import { FavouritesService } from './favourites.service';
 import { Favourite } from './favourites.model';
+import { User } from '@modules/users/users.model';
+import { context, CONTEXT_KEYS } from '@common/cls/request-context';
 
 @ApiTags('Operations with list of favourite properties')
 @Controller('api/favourites')
@@ -25,8 +26,9 @@ export class FavouritesController {
   @Roles('ADMIN', 'CLIENT')
   @UseGuards(RolesAuthGuard)
   @Get('/all')
-  confirm(@Req() req) {
-    const userId: number = req?.user.id;
+  confirm() {
+    const user: User = context.get(CONTEXT_KEYS.USER);
+    const userId: number = user.id;
     return this.favouritesService.getAllOfUser(userId);
   }
 
@@ -37,8 +39,9 @@ export class FavouritesController {
   @Roles('ADMIN', 'CLIENT')
   @UseGuards(RolesAuthGuard)
   @Post('/add/:propertyId')
-  addToFavourites(@Req() req, @Param('propertyId') propertyId: number) {
-    const userId: number = req?.user.id;
+  addToFavourites(@Param('propertyId') propertyId: number) {
+    const user: User = context.get(CONTEXT_KEYS.USER);
+    const userId: number = user.id;
     return this.favouritesService.addToFavourites(userId, propertyId);
   }
 
@@ -49,8 +52,9 @@ export class FavouritesController {
   @Roles('ADMIN', 'CLIENT')
   @UseGuards(RolesAuthGuard)
   @Delete('/delete/:propertyId')
-  removeFromFavourites(@Req() req, @Param('propertyId') propertyId: number) {
-    const userId: number = req?.user.id;
+  removeFromFavourites(@Param('propertyId') propertyId: number) {
+    const user: User = context.get(CONTEXT_KEYS.USER);
+    const userId: number = user.id;
     return this.favouritesService.removeFromFavourites(userId, propertyId);
   }
 }

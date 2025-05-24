@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { Property } from '../properties/properties.model';
-import { Roles } from '../auth/roles-auth.decorator';
+import { Roles } from '@common/decorators/roles-auth.decorator';
 import { RolesAuthGuard } from '@common/guards/roles-auth.guard';
 import { CreateTypeDto } from './dto/create-type.dto';
 import { TypesService } from './types.service';
