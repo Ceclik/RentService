@@ -3,16 +3,11 @@ import {
   Injectable,
   InternalServerErrorException,
 } from '@nestjs/common';
-import { InjectModel } from '@nestjs/sequelize';
-import { Favourite } from './favourites.model';
-import { Property } from '../properties/properties.model';
-import { PropertyImage } from '../descriptions/property-images.model';
+import { FavouritesRepository } from '@modules/favourites/favourites.repository';
 
 @Injectable()
 export class FavouritesService {
-  constructor(
-    @InjectModel(Favourite) private favouriteRepository: typeof Favourite,
-  ) {}
+  constructor(private favouritesRepository: FavouritesRepository) {}
 
   private catchError(e: Error) {
     if (e instanceof BadRequestException)
@@ -23,10 +18,7 @@ export class FavouritesService {
 
   async getAllOfUser(clientId: number) {
     try {
-      return await this.favouriteRepository.findAll({
-        where: { clientId },
-        include: [{ model: Property, include: [{ model: PropertyImage }] }],
-      });
+      return await this.favouritesRepository.findAllOfClient(clientId);
     } catch (e) {
       this.catchError(e);
     }
@@ -34,7 +26,7 @@ export class FavouritesService {
 
   async addToFavourites(clientId: number, propertyId: number) {
     try {
-      return await this.favouriteRepository.create({ propertyId, clientId });
+      return await this.favouritesRepository.addToFavourites(clientId, propertyId);
     } catch (e) {
       this.catchError(e);
     }
@@ -42,9 +34,7 @@ export class FavouritesService {
 
   async removeFromFavourites(clientId: number, propertyId: number) {
     try {
-      await this.favouriteRepository.destroy({
-        where: { clientId, propertyId },
-      });
+      await this.favouritesRepository.removeFromFavourites(clientId, propertyId);
       return JSON.stringify(
         'Property has been successfully deleted from the favourites list',
       );
