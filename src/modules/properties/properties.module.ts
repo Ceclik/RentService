@@ -13,10 +13,21 @@ import { PropertyImage } from '../descriptions/property-images.model';
 import { AnalyticsModule } from '../analytics/analytics.module';
 import { Analytics } from '../analytics/analytics.model';
 import { PropertiesRepository } from '@modules/properties/properties.repository';
+import { TypesRepository } from '@modules/types/types.repository';
+import { DescriptionsRepository } from '@modules/descriptions/descriptions.repository';
+import { ImagesRepository } from '@modules/descriptions/images.repository';
+import { AnalyticsRepository } from '@modules/analytics/analytics.repository';
 
 @Module({
   controllers: [PropertiesController],
-  providers: [PropertiesService, PropertiesRepository],
+  providers: [
+    PropertiesService,
+    PropertiesRepository,
+    TypesRepository,
+    DescriptionsRepository,
+    ImagesRepository,
+    AnalyticsRepository
+  ],
   imports: [
     SequelizeModule.forFeature([
       Property,

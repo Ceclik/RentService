@@ -55,4 +55,8 @@ export class AnalyticsRepository {
       },
     );
   }
+
+  async createAnalytics(propertyId: number, transaction: Transaction) {
+    await this.analyticsRepository.create({ propertyId }, { transaction });
+  }
 }

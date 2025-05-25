@@ -4,7 +4,7 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import { Transaction } from 'sequelize';
-import { AnalyticsRepository } from '@modules/analytics/analytics.Repository';
+import { AnalyticsRepository } from '@modules/analytics/analytics.repository';
 
 @Injectable()
 export class AnalyticsService {
