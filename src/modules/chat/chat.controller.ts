@@ -8,7 +8,7 @@ import {
 import { ChatService } from './chat.service';
 import { JwtAuthGuard } from '@common/guards/jwt-auth.guard';
 import { Chat } from './chat.model';
-import { Message } from './messages.model';
+import { Message } from './messages/messages.model';
 
 @ApiTags('Operations with chat')
 @ApiBearerAuth('access-token')

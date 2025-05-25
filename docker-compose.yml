@@ -14,21 +14,21 @@ services:
     ports:
       - "${POSTGRES_PORT}:${POSTGRES_PORT}"
 
-  main:
-    container_name: main
-    build:
-      context: .
-    env_file:
-      - .env
-    volumes:
-      - .:/usr/src/app
-      - /usr/src/app/node_modules
-    ports:
-      - "7000:7000"
-      - "9229:9229"
-    depends_on:
-      - postgres
-    restart: always
+#  main:
+#    container_name: main
+#    build:
+#      context: .
+#    env_file:
+#      - .env
+#    volumes:
+#      - .:/usr/src/app
+#      - /usr/src/app/node_modules
+#    ports:
+#      - "7000:7000"
+#      - "9229:9229"
+#    depends_on:
+#      - postgres
+#    restart: always
 
 volumes:
   postgres_db:

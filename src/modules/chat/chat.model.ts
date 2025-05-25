@@ -9,7 +9,7 @@ import {
 } from 'sequelize-typescript';
 import { ApiProperty } from '@nestjs/swagger';
 import { User } from '../users/users.model';
-import { Message } from './messages.model';
+import { Message } from './messages/messages.model';
 
 interface ChatCreationAttrs {
   user1Id: number;

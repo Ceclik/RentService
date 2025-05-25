@@ -28,7 +28,7 @@ import { ReviewImage } from '@modules/reviews/review-images.model';
 import { AnalyticsModule } from '@modules/analytics/analytics.module';
 import { Analytics } from '@modules/analytics/analytics.model';
 import { ChatModule } from '@modules/chat/chat.module';
-import { Message } from '@modules/chat/messages.model';
+import { Message } from '@modules/chat/messages/messages.model';
 import { Chat } from '@modules/chat/chat.model';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import * as path from 'path';

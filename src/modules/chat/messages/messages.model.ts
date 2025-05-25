@@ -7,8 +7,8 @@ import {
   Table,
 } from 'sequelize-typescript';
 import { ApiProperty } from '@nestjs/swagger';
-import { User } from '../users/users.model';
-import { Chat } from './chat.model';
+import { User } from '../../users/users.model';
+import { Chat } from '../chat.model';
 
 interface MessageCreationAttrs {
   message: string;
