@@ -12,10 +12,11 @@ import { FilesModule } from '../files/files.module';
 import { PropertyImage } from '../descriptions/property-images.model';
 import { AnalyticsModule } from '../analytics/analytics.module';
 import { Analytics } from '../analytics/analytics.model';
+import { PropertiesRepository } from '@modules/properties/properties.repository';
 
 @Module({
   controllers: [PropertiesController],
-  providers: [PropertiesService],
+  providers: [PropertiesService, PropertiesRepository],
   imports: [
     SequelizeModule.forFeature([
       Property,

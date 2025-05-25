@@ -109,4 +109,10 @@ export class BookingsRepository {
   async createTransaction() {
     return await this.bookingsRepository.sequelize?.transaction();
   }
+
+  async findAllTomorrowBookings(tomorrow: Date) {
+    return await this.bookingsRepository.findAll({
+      where: { startDate: tomorrow, status: 'confirmed' },
+    });
+  }
 }

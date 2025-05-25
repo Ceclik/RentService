@@ -3,20 +3,19 @@ import {
   Injectable,
   InternalServerErrorException,
 } from '@nestjs/common';
-import { Contract } from './contracts.model';
-import { InjectModel } from '@nestjs/sequelize';
-import { Booking } from '../bookings/bookings.model';
 import { addDays, differenceInDays, startOfDay } from 'date-fns';
-import { Property } from '../properties/properties.model';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { AnalyticsService } from '../analytics/analytics.service';
+import { ContractsRepository } from '@modules/contracts/contracts.repository';
+import { BookingsRepository } from '@modules/bookings/bookings.repository';
+import { PropertiesRepository } from '@modules/properties/properties.repository';
 
 @Injectable()
 export class ContractsService {
   constructor(
-    @InjectModel(Contract) private contractsRepository: typeof Contract,
-    @InjectModel(Booking) private bookingRepository: typeof Booking,
-    @InjectModel(Property) private propertyRepository: typeof Property,
+    private contractsRepository: ContractsRepository,
+    private bookingsRepository: BookingsRepository,
+    private propertiesRepository: PropertiesRepository,
     private analyticsService: AnalyticsService,
   ) {}
 
@@ -49,17 +48,11 @@ export class ContractsService {
   async closeContract() {
     try {
       const today = new Date();
-      const contracts = await this.contractsRepository.findAll({
-        include: [
-          {
-            model: Booking,
-            where: { endDate: today },
-          },
-        ],
-      });
+      const contracts =
+        await this.contractsRepository.findAllWithEndDate(today);
 
       for (const contract of contracts) {
-        await contract.update({ status: 'closed' });
+        await this.contractsRepository.changeToClosedStatus(contract);
       }
     } catch (e) {
       this.catchException(e);
@@ -70,9 +63,8 @@ export class ContractsService {
   async generateContractsForUpcomingBookings() {
     try {
       const tomorrow = startOfDay(addDays(new Date(), 1));
-      const bookings = await this.bookingRepository.findAll({
-        where: { startDate: tomorrow, status: 'confirmed' },
-      });
+      const bookings =
+        await this.bookingsRepository.findAllTomorrowBookings(tomorrow);
 
       if (bookings.length === 0) {
         console.log('There are no bookings to generate contract from');
@@ -80,21 +72,21 @@ export class ContractsService {
       }
 
       for (const booking of bookings) {
-        const property = await this.propertyRepository.findByPk(
+        const property = await this.propertiesRepository.findById(
           booking.propertyId,
         );
         if (!property)
           throw new InternalServerErrorException('Property note is wrong');
-        await this.contractsRepository.create({
-          totalPrice: this.calculateTotalAmount(
-            booking.startDate,
-            booking.endDate,
-            property.price,
-          ),
-          bookingId: booking.id,
-          ownerId: property.ownerId,
-          clientId: booking.clientId,
-        });
+        const totalPrice = this.calculateTotalAmount(
+          booking.startDate,
+          booking.endDate,
+          property.price,
+        );
+        await this.contractsRepository.createContract(
+          totalPrice,
+          booking,
+          property,
+        );
       }
     } catch (e) {
       console.log(e);
@@ -103,15 +95,18 @@ export class ContractsService {
   }
 
   async confirmContract(id: number) {
-    const transaction = await this.contractsRepository.sequelize?.transaction();
+    const transaction = await this.contractsRepository.createTransaction();
     try {
-      const contractToConfirm = await this.contractsRepository.findByPk(id, {
-        include: { model: Booking },
-      });
+      const contractToConfirm =
+        await this.contractsRepository.findByIdIncludingBookings(id);
       if (!contractToConfirm)
         throw new BadRequestException('There is no such contract!');
 
-      await contractToConfirm.update({ status: 'confirmed' }, { transaction });
+      if (transaction)
+        await this.contractsRepository.confirmContract(
+          contractToConfirm,
+          transaction,
+        );
       await this.analyticsService.countRevenue(
         contractToConfirm.booking.propertyId,
         contractToConfirm.totalPrice,
@@ -125,9 +120,8 @@ export class ContractsService {
 
   async getAllOfClient(clientId: number) {
     try {
-      const contracts = await this.contractsRepository.findAll({
-        where: { clientId },
-      });
+      const contracts =
+        await this.contractsRepository.findAllContractsOfClient(clientId);
       if (contracts.length === 0)
         return JSON.stringify('This client has no contracts');
       return contracts;
@@ -138,9 +132,7 @@ export class ContractsService {
 
   async getAllOfOwner(ownerId: number) {
     try {
-      const contracts = await this.contractsRepository.findAll({
-        where: { ownerId },
-      });
+      const contracts = await this.contractsRepository.findAllOfOwner(ownerId);
       if (contracts.length === 0)
         return JSON.stringify('This owner has no contracts');
       return contracts;
@@ -151,14 +143,8 @@ export class ContractsService {
 
   async getAllOfProperty(propertyId: number) {
     try {
-      const contracts = await this.contractsRepository.findAll({
-        include: [
-          {
-            model: Booking,
-            where: { propertyId },
-          },
-        ],
-      });
+      const contracts =
+        await this.contractsRepository.findAllOfProperty(propertyId);
 
       if (contracts.length === 0)
         return JSON.stringify('This property has no contracts');

@@ -1,32 +1,27 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { InjectModel } from '@nestjs/sequelize';
-import { Message } from './messages/messages.model';
 import { CreateMessageDto } from './dto/create-message.dto';
 import { Chat } from './chat.model';
-import { Op } from 'sequelize';
 import { ChatRepository } from '@modules/chat/chat.repository';
 import { MessageRepository } from '@modules/chat/messages/message.repository';
 
 @Injectable()
 export class ChatService {
   constructor(
-    @InjectModel(Message) private messageRepository: typeof Message,
-    private messageRep: MessageRepository,
-    @InjectModel(Chat) private chatRepository: typeof Chat,
-    private chatRep: ChatRepository,
+    private messageRepository: MessageRepository,
+    private chatRepository: ChatRepository,
   ) {}
 
   async createMessage(dto: CreateMessageDto) {
     try {
       let chatid: number = 0;
-      const chat = await this.chatRep.findChatFromTwoUsers(dto);
+      const chat = await this.chatRepository.findChatFromTwoUsers(dto);
       if (!chat) {
-        const createdChat = await this.chatRep.createChat(dto);
+        const createdChat = await this.chatRepository.createChat(dto);
         chatid = createdChat.id;
       } else {
         if (chat instanceof Chat) chatid = chat.id;
       }
-      return await this.messageRep.createMessage(dto, chatid);
+      return await this.messageRepository.createMessage(dto, chatid);
     } catch (e) {
       console.log(e);
       throw new InternalServerErrorException();
@@ -35,7 +30,7 @@ export class ChatService {
 
   async deleteMessage(id: number) {
     try {
-      await this.messageRep.deleteMessage(id);
+      await this.messageRepository.deleteMessage(id);
       return JSON.stringify('Message has been successfully deleted!');
     } catch (e) {
       console.log(e);
@@ -45,7 +40,7 @@ export class ChatService {
 
   async getAllMessagesOfChat(chatid: number) {
     try {
-      return await this.messageRep.findAllMessagesInChat(chatid);
+      return await this.messageRepository.findAllMessagesInChat(chatid);
     } catch (e) {
       console.log(e);
       throw new InternalServerErrorException();
@@ -54,7 +49,7 @@ export class ChatService {
 
   async deleteChat(id: number) {
     try {
-      await this.chatRep.destroyChat(id);
+      await this.chatRepository.destroyChat(id);
       return JSON.stringify('Chat has been successfully deleted!');
     } catch (e) {
       console.log(e);
@@ -64,7 +59,7 @@ export class ChatService {
 
   async getAllOfUser(userId: number) {
     try {
-      return await this.chatRep.getAllChatsOfUser(userId);
+      return await this.chatRepository.getAllChatsOfUser(userId);
     } catch (e) {
       console.log(e);
       throw new InternalServerErrorException();
