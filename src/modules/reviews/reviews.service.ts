@@ -8,11 +8,13 @@ import { Review } from './rewiews.model';
 import { ReviewImage } from './review-images.model';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { FilesService } from '../files/files.service';
+import { ReviewsRepository } from '@modules/reviews/reviews.repository';
 
 @Injectable()
 export class ReviewsService {
   constructor(
     @InjectModel(Review) private reviewsRepository: typeof Review,
+    private reviewsRep: ReviewsRepository,
     @InjectModel(ReviewImage)
     private reviewsImageRepository: typeof ReviewImage,
     private filesService: FilesService,
@@ -20,10 +22,7 @@ export class ReviewsService {
 
   async getAllOfProperty(propertyId: number) {
     try {
-      return await this.reviewsRepository.findAll({
-        where: { propertyId },
-        include: { all: true },
-      });
+      return await this.reviewsRep.getAllOfProperty(propertyId);
     } catch (e) {
       console.log(e);
       throw new InternalServerErrorException();
@@ -32,10 +31,7 @@ export class ReviewsService {
 
   async getAllFromClient(clientId: number) {
     try {
-      return await this.reviewsRepository.findAll({
-        where: { clientId },
-        include: { all: true },
-      });
+      return await this.reviewsRep.getAllFromClient(clientId);
     } catch (e) {
       console.log(e);
       throw new InternalServerErrorException();
@@ -43,21 +39,11 @@ export class ReviewsService {
   }
 
   async addReview(dto: CreateReviewDto, images) {
-    const transaction = await this.reviewsRepository.sequelize?.transaction();
+    const transaction = await this.reviewsRep.createTransaction();
     try {
-      const createdReview = await this.reviewsRepository.create(dto, {
-        transaction,
-      });
-
-      for (const image of images) {
-        const imageUrl = await this.filesService.createFile(image);
-
-        await this.reviewsImageRepository.create(
-          { imageUrl, reviewId: createdReview.id },
-          { transaction },
-        );
-      }
-      if (transaction) await transaction.commit();
+      let createdReview;
+      if (transaction)
+        createdReview = await this.reviewsRep.addNew(dto, images, transaction);
       return createdReview;
     } catch (e) {
       await transaction?.rollback();
@@ -68,7 +54,7 @@ export class ReviewsService {
 
   async removeReview(id: number) {
     try {
-      await this.reviewsRepository.destroy({ where: { id } });
+      await this.reviewsRep.remove(id);
       return JSON.stringify('Review has been successfully deleted!');
     } catch (e) {
       console.log(e);
@@ -77,36 +63,14 @@ export class ReviewsService {
   }
 
   async updateReview(dto: CreateReviewDto, images, reviewId: number) {
-    const transaction = await this.reviewsRepository.sequelize?.transaction();
+    const transaction = await this.reviewsRep.createTransaction();
     try {
-      const reviewToUpdate = await this.reviewsRepository.findByPk(reviewId);
+      const reviewToUpdate = await this.reviewsRep.findById(reviewId);
       if (!reviewId) throw new BadRequestException('There is no such review!');
 
-      await this.reviewsRepository.update(
-        {
-          rating: dto.rating,
-          review: dto.review,
-          clientId: dto.clientId,
-          propertyId: dto.propertyId,
-        },
-        {
-          where: { id: reviewId },
-          transaction,
-        },
-      );
+      if (transaction)
+        await this.reviewsRep.update(dto, images, reviewId, transaction);
 
-      await this.reviewsImageRepository.destroy({
-        where: { reviewId },
-      });
-
-      for (const image of images) {
-        const imageUrl = await this.filesService.createFile(image);
-
-        await this.reviewsImageRepository.create(
-          { imageUrl, reviewId },
-          { transaction },
-        );
-      }
       if (transaction) await transaction?.commit();
       return reviewToUpdate;
     } catch (e) {
