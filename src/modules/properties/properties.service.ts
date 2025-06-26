@@ -17,16 +17,16 @@ import { AnalyticsRepository } from '@modules/analytics/analytics.repository';
 export class PropertiesService {
   constructor(
     private descriptionRep: DescriptionsRepository,
-    private typesRep: TypesRepository,
-    private imagesRep: ImagesRepository,
-    private analyticsRep: AnalyticsRepository,
-    private propertyRep: PropertiesRepository,
+    private typesRepository: TypesRepository,
+    private imagesRepository: ImagesRepository,
+    private analyticsRepository: AnalyticsRepository,
+    private propertiesRepository: PropertiesRepository,
     private filesService: FilesService,
     private analyticsService: AnalyticsService,
   ) {}
 
   async createProperty(dto: ReceivePropertyDto, ownerId: number, images) {
-    const transaction = await this.propertyRep.createTransaction();
+    const transaction = await this.propertiesRepository.createTransaction();
     try {
       console.log(`dto in controller: ${JSON.stringify(dto)}`);
       const createPropertyDto = {
@@ -36,14 +36,14 @@ export class PropertiesService {
         typeId: dto.typeId,
         ownerId,
       };
-      if (!(await this.typesRep.findById(dto.typeId)))
+      if (!(await this.typesRepository.findById(dto.typeId)))
         throw new BadRequestException('Type with this id does not exists');
 
       let createdProperty: Property | undefined;
       createdProperty = undefined;
 
       if (transaction)
-        createdProperty = await this.propertyRep.createProperty(
+        createdProperty = await this.propertiesRepository.createProperty(
           createPropertyDto,
           transaction,
         );
@@ -67,7 +67,7 @@ export class PropertiesService {
       for (const image of images) {
         const imageUrl = await this.filesService.createFile(image);
         if (createdProperty && transaction)
-          await this.imagesRep.createPropertyImage(
+          await this.imagesRepository.createPropertyImage(
             imageUrl,
             createdProperty.id,
             transaction,
@@ -75,7 +75,7 @@ export class PropertiesService {
       }
 
       if (createdProperty && transaction)
-        await this.analyticsRep.createAnalytics(
+        await this.analyticsRepository.createAnalytics(
           createdProperty.id,
           transaction,
         );
@@ -90,29 +90,29 @@ export class PropertiesService {
   }
 
   async getAllProperties() {
-    return await this.propertyRep.findAllProperties();
+    return await this.propertiesRepository.findAllProperties();
   }
 
   async deleteProperty(id: number) {
-    await this.propertyRep.deleteProperty(id);
+    await this.propertiesRepository.deleteProperty(id);
     return JSON.stringify('Chosen property has been successfully deleted!');
   }
 
   async getOneProperty(id: number) {
-    const property = await this.propertyRep.findById(id);
+    const property = await this.propertiesRepository.findById(id);
     if (!property) return JSON.stringify('There is no such property');
     await this.analyticsService.increaseViews(id);
     return property;
   }
 
   async updateProperty(dto: ReceivePropertyDto, ownerId: number, id: number) {
-    const transaction = await this.propertyRep.createTransaction();
+    const transaction = await this.propertiesRepository.createTransaction();
     try {
-      if (!(await this.typesRep.findById(dto.typeId)))
+      if (!(await this.typesRepository.findById(dto.typeId)))
         throw new BadRequestException('Type with this id does not exists');
 
       if (transaction)
-        await this.propertyRep.updateProperty(id, dto, transaction);
+        await this.propertiesRepository.updateProperty(id, dto, transaction);
 
       const propertyDescriptions =
         await this.descriptionRep.findAllByPropertyId(id);
@@ -128,7 +128,7 @@ export class PropertiesService {
       }
 
       if (transaction) await transaction.commit();
-      return await this.propertyRep.findByIdIncludeAll(id);
+      return await this.propertiesRepository.findByIdIncludeAll(id);
     } catch (e) {
       console.log(e);
       if (transaction) await transaction.rollback();

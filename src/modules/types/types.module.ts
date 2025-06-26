@@ -4,10 +4,11 @@ import { TypesService } from './types.service';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { Type } from './types.model';
 import { AuthModule } from '../auth/auth.module';
+import { TypesRepository } from '@modules/types/types.repository';
 
 @Module({
   controllers: [TypesController],
-  providers: [TypesService],
+  providers: [TypesService, TypesRepository],
   imports: [SequelizeModule.forFeature([Type]), forwardRef(() => AuthModule)],
   exports: [TypesService],
 })

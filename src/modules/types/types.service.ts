@@ -1,22 +1,21 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/sequelize';
-import { Type } from './types.model';
 import { CreateTypeDto } from './dto/create-type.dto';
+import { TypesRepository } from '@modules/types/types.repository';
 
 @Injectable()
 export class TypesService {
-  constructor(@InjectModel(Type) private typeRepository: typeof Type) {}
+  constructor(private typesRepository: TypesRepository) {}
 
   async createType(dto: CreateTypeDto) {
-    return await this.typeRepository.create(dto);
+    return await this.typesRepository.create(dto);
   }
 
   async getAllTypes() {
-    return await this.typeRepository.findAll();
+    return await this.typesRepository.getAll();
   }
 
   async deleteType(id: number) {
-    await this.typeRepository.destroy({ where: { id } });
+    await this.typesRepository.delete(id);
     return JSON.stringify('Type has been successfully deleted');
   }
 }

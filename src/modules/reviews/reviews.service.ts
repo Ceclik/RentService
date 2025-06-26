@@ -3,26 +3,16 @@ import {
   Injectable,
   InternalServerErrorException,
 } from '@nestjs/common';
-import { InjectModel } from '@nestjs/sequelize';
-import { Review } from './rewiews.model';
-import { ReviewImage } from './review-images.model';
 import { CreateReviewDto } from './dto/create-review.dto';
-import { FilesService } from '../files/files.service';
 import { ReviewsRepository } from '@modules/reviews/reviews.repository';
 
 @Injectable()
 export class ReviewsService {
-  constructor(
-    @InjectModel(Review) private reviewsRepository: typeof Review,
-    private reviewsRep: ReviewsRepository,
-    @InjectModel(ReviewImage)
-    private reviewsImageRepository: typeof ReviewImage,
-    private filesService: FilesService,
-  ) {}
+  constructor(private reviewsRepository: ReviewsRepository) {}
 
   async getAllOfProperty(propertyId: number) {
     try {
-      return await this.reviewsRep.getAllOfProperty(propertyId);
+      return await this.reviewsRepository.getAllOfProperty(propertyId);
     } catch (e) {
       console.log(e);
       throw new InternalServerErrorException();
@@ -31,7 +21,7 @@ export class ReviewsService {
 
   async getAllFromClient(clientId: number) {
     try {
-      return await this.reviewsRep.getAllFromClient(clientId);
+      return await this.reviewsRepository.getAllFromClient(clientId);
     } catch (e) {
       console.log(e);
       throw new InternalServerErrorException();
@@ -39,11 +29,15 @@ export class ReviewsService {
   }
 
   async addReview(dto: CreateReviewDto, images) {
-    const transaction = await this.reviewsRep.createTransaction();
+    const transaction = await this.reviewsRepository.createTransaction();
     try {
       let createdReview;
       if (transaction)
-        createdReview = await this.reviewsRep.addNew(dto, images, transaction);
+        createdReview = await this.reviewsRepository.addNew(
+          dto,
+          images,
+          transaction,
+        );
       return createdReview;
     } catch (e) {
       await transaction?.rollback();
@@ -54,7 +48,7 @@ export class ReviewsService {
 
   async removeReview(id: number) {
     try {
-      await this.reviewsRep.remove(id);
+      await this.reviewsRepository.remove(id);
       return JSON.stringify('Review has been successfully deleted!');
     } catch (e) {
       console.log(e);
@@ -63,13 +57,13 @@ export class ReviewsService {
   }
 
   async updateReview(dto: CreateReviewDto, images, reviewId: number) {
-    const transaction = await this.reviewsRep.createTransaction();
+    const transaction = await this.reviewsRepository.createTransaction();
     try {
-      const reviewToUpdate = await this.reviewsRep.findById(reviewId);
+      const reviewToUpdate = await this.reviewsRepository.findById(reviewId);
       if (!reviewId) throw new BadRequestException('There is no such review!');
 
       if (transaction)
-        await this.reviewsRep.update(dto, images, reviewId, transaction);
+        await this.reviewsRepository.update(dto, images, reviewId, transaction);
 
       if (transaction) await transaction?.commit();
       return reviewToUpdate;
