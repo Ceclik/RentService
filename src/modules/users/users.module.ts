@@ -7,10 +7,11 @@ import { Role } from '../roles/roles.model';
 import { UserRoles } from '../roles/user-roles.model';
 import { RolesModule } from '../roles/roles.module';
 import { AuthModule } from '../auth/auth.module';
+import { UsersRepository } from '@modules/users/users.repository';
 
 @Module({
   controllers: [UsersController],
-  providers: [UsersService],
+  providers: [UsersService, UsersRepository],
   imports: [
     SequelizeModule.forFeature([User, Role, UserRoles]),
     RolesModule,
