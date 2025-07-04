@@ -31,6 +31,8 @@ import { ChatModule } from '@modules/chat/chat.module';
 import { Message } from '@modules/chat/messages/messages.model';
 import { Chat } from '@modules/chat/chat.model';
 import { ServeStaticModule } from '@nestjs/serve-static';
+import { MinioModule } from '@modules/minio/minio.module';
+import { MinioController } from '@modules/minio/minio.controller';
 import * as path from 'path';
 
 @Module({
@@ -81,6 +83,8 @@ import * as path from 'path';
     ReviewsModule,
     AnalyticsModule,
     ChatModule,
+    MinioModule,
   ],
+  controllers: [MinioController],
 })
 export class AppModule {}

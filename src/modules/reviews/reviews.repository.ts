@@ -5,7 +5,7 @@ import { ReviewImage } from '@modules/reviews/review-images.model';
 import { CreateReviewDto } from '@modules/reviews/dto/create-review.dto';
 import { Transaction } from 'sequelize';
 import { FilesService } from '@modules/files/files.service';
-import { removeUndefinedKeys } from '@nestjs/swagger/dist/utils/remove-undefined-keys';
+import { MinioService } from '@modules/minio/minio.service';
 
 @Injectable()
 export class ReviewsRepository {
@@ -14,6 +14,7 @@ export class ReviewsRepository {
     @InjectModel(ReviewImage)
     private reviewsImageRepository: typeof ReviewImage,
     private filesService: FilesService,
+    private minioService: MinioService,
   ) {}
 
   async createTransaction() {
@@ -40,10 +41,9 @@ export class ReviewsRepository {
     });
 
     for (const image of images) {
-      const imageUrl = await this.filesService.createFile(image);
-
+      const filename = await this.minioService.uploadFile(image);
       await this.reviewsImageRepository.create(
-        { imageUrl, reviewId: createdReview.id },
+        { imageUrl: filename, reviewId: createdReview.id },
         { transaction },
       );
     }

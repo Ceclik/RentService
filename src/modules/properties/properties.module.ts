@@ -17,6 +17,8 @@ import { TypesRepository } from '@modules/types/types.repository';
 import { DescriptionsRepository } from '@modules/descriptions/descriptions.repository';
 import { ImagesRepository } from '@modules/descriptions/images.repository';
 import { AnalyticsRepository } from '@modules/analytics/analytics.repository';
+import { MinioService } from '@modules/minio/minio.service';
+import { MinioModule } from '@modules/minio/minio.module';
 
 @Module({
   controllers: [PropertiesController],
@@ -26,7 +28,7 @@ import { AnalyticsRepository } from '@modules/analytics/analytics.repository';
     TypesRepository,
     DescriptionsRepository,
     ImagesRepository,
-    AnalyticsRepository
+    AnalyticsRepository,
   ],
   imports: [
     SequelizeModule.forFeature([
@@ -41,6 +43,7 @@ import { AnalyticsRepository } from '@modules/analytics/analytics.repository';
     forwardRef(() => AuthModule),
     FilesModule,
     AnalyticsModule,
+    MinioModule,
   ],
   exports: [PropertiesService],
 })

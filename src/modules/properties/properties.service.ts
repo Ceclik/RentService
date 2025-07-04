@@ -12,6 +12,7 @@ import { TypesRepository } from '@modules/types/types.repository';
 import { DescriptionsRepository } from '@modules/descriptions/descriptions.repository';
 import { ImagesRepository } from '@modules/descriptions/images.repository';
 import { AnalyticsRepository } from '@modules/analytics/analytics.repository';
+import { MinioService } from '@modules/minio/minio.service';
 
 @Injectable()
 export class PropertiesService {
@@ -23,6 +24,7 @@ export class PropertiesService {
     private propertiesRepository: PropertiesRepository,
     private filesService: FilesService,
     private analyticsService: AnalyticsService,
+    private minioService: MinioService,
   ) {}
 
   async createProperty(dto: ReceivePropertyDto, ownerId: number, images) {
@@ -65,10 +67,11 @@ export class PropertiesService {
         }
 
       for (const image of images) {
-        const imageUrl = await this.filesService.createFile(image);
+        //const filename = await this.filesService.createFile(image);
+        const filename = await this.minioService.uploadFile(image);
         if (createdProperty && transaction)
           await this.imagesRepository.createPropertyImage(
-            imageUrl,
+            filename,
             createdProperty.id,
             transaction,
           );
