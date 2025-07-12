@@ -9,12 +9,14 @@ import {
 import { ApiProperty } from '@nestjs/swagger';
 import { User } from '../../users/users.model';
 import { Chat } from '../chat.model';
+import { BOOLEAN } from 'sequelize';
 
 interface MessageCreationAttrs {
   message: string;
   senderId: number;
   receiverId: number;
   chatid: number;
+  hasdelivered: boolean;
 }
 
 @Table({ tableName: 'messages' })
@@ -39,19 +41,34 @@ export class Message extends Model<Message, MessageCreationAttrs> {
   message: string;
 
   @ForeignKey(() => User)
-  @Column({ type: DataType.INTEGER, allowNull: false })
+  @Column({ type: DataType.INTEGER })
   senderId: number;
 
   @ForeignKey(() => User)
-  @Column({ type: DataType.INTEGER, allowNull: false })
+  @Column({ type: DataType.INTEGER })
   receiverId: number;
 
   @ForeignKey(() => Chat)
   @Column({ type: DataType.INTEGER, allowNull: false })
   chatid: number;
 
-  @BelongsTo(() => User)
-  user: User;
+  @Column({ type: DataType.BOOLEAN, allowNull: false, defaultValue: 'false' })
+  hasdelivered: boolean;
+  // Ассоциация для отправителя
+  @BelongsTo(() => User, {
+    foreignKey: 'senderId',
+    as: 'sender',
+    onDelete: 'SET NULL',
+  })
+  sender: User;
+
+  // Ассоциация для получателя
+  @BelongsTo(() => User, {
+    foreignKey: 'receiverId',
+    as: 'receiver',
+    onDelete: 'SET NULL',
+  })
+  receiver: User;
 
   @BelongsTo(() => Chat, { onDelete: 'CASCADE' })
   chat: Chat;

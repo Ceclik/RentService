@@ -7,7 +7,6 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { Injectable } from '@nestjs/common';
-import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { User } from '../users/users.model';
 import { ChatService } from './chat.service';
@@ -17,15 +16,13 @@ import { ChatService } from './chat.service';
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   constructor(
     private chatService: ChatService,
-    private userService: UsersService,
     private jwtService: JwtService,
   ) {}
 
   @WebSocketServer() private server: Server;
   private users = new Map<number, string>();
-  private senderId: number;
 
-  handleConnection(client: Socket) {
+  async handleConnection(client: Socket) {
     try {
       const token =
         client.handshake.auth?.token ||
@@ -41,8 +38,20 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       (client as any).user = user;
 
       this.users.set(user.id, client.id);
-      this.senderId = user.id;
       console.log(`User ${user.id} connected with socket ${client.id}`);
+
+      const messages = await this.chatService.getAllUnreadMessagesOfUser(
+        user.id,
+      );
+
+      if (messages.length > 0) {
+        messages.forEach((message) => {
+          this.emitMessage(client.id, message.senderId, {
+            toUserId: message.receiverId,
+            message: message.message,
+          });
+        });
+      }
     } catch (err) {
       console.log('Invalid token:', err.message);
       client.disconnect();
@@ -57,6 +66,19 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
   }
 
+  private emitMessage(
+    recipientSocketId: string,
+    senderId: number,
+    data: { toUserId: number; message: string },
+  ) {
+    this.server
+      .to(recipientSocketId)
+      .emit('reply', JSON.stringify({ senderId, message: data.message }));
+    console.log(
+      `Message sent to user ${data.toUserId}, with socket id: ${recipientSocketId}: ${data.message}`,
+    );
+  }
+
   @SubscribeMessage('message')
   async handleMessage(
     client: Socket,
@@ -64,11 +86,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   ) {
     let recipientSocketId: string = '';
     let receiverId: number = 0;
-    console.log('All registered and connected users: ');
+
     for (const user of this.users) {
-      console.log(
-        `User id: ${user[0]}, userId type: ${typeof user[0]}, user socket: ${user[1]}, to user id: ${data.toUserId}`,
-      );
       if (user[0] === data.toUserId) {
         receiverId = user[0];
         recipientSocketId = user[1];
@@ -76,22 +95,38 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
 
     if (recipientSocketId.length > 0) {
-      await this.chatService.createMessage({
-        message: data.message,
-        senderId: (client as any).user.id,
-        receiverId,
-      });
-      this.server.to(recipientSocketId).emit('reply', data.message);
-      console.log(`Message sent to user ${data.toUserId}: ${data.message}`);
+      await this.saveMessageToDB(data, client, true);
+      const senderId = this.getUserIdBySocket(client.id);
+      this.emitMessage(recipientSocketId, senderId, data);
     } else {
-      console.log(`User ${data.toUserId} is not connected`);
+      console.log(`User ${data.toUserId} is not connected.`);
+      await this.saveMessageToDB(data, client, false);
     }
   }
 
-  private getUserIdBySocket(socketId: string): number | undefined {
+  private async saveMessageToDB(
+    data: {
+      toUserId: number;
+      message: string;
+    },
+    client: Socket,
+    hasdelivered: boolean,
+  ) {
+    console.log(
+      `message data while saving to db: senderId: ${(client as any).user.id}, receiverId: ${data.toUserId}, message: ${data.message}`,
+    );
+    await this.chatService.createMessage({
+      message: data.message,
+      senderId: (client as any).user.id,
+      receiverId: data.toUserId,
+      hasdelivered,
+    });
+  }
+
+  private getUserIdBySocket(socketId: string): number {
     for (const [userId, id] of this.users.entries()) {
       if (id === socketId) return userId;
     }
-    return undefined;
+    return 0;
   }
 }

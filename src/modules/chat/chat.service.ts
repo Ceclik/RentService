@@ -28,6 +28,21 @@ export class ChatService {
     }
   }
 
+  async getAllUnreadMessagesOfUser(userId: number) {
+    try {
+      const unreadMessages =
+        await this.messageRepository.getAllUnreadOfUser(userId);
+      for (const message of unreadMessages) {
+        await this.messageRepository.setReadFlagTrue(message.id);
+      }
+
+      return unreadMessages;
+    } catch (e) {
+      console.log(e);
+      throw new InternalServerErrorException();
+    }
+  }
+
   async deleteMessage(id: number) {
     try {
       await this.messageRepository.deleteMessage(id);

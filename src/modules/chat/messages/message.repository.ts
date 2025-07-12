@@ -16,6 +16,20 @@ export class MessageRepository {
     });
   }
 
+  async getAllUnreadOfUser(userId: number) {
+    return await this.messageRepository.findAll({
+      where: { receiverId: userId, hasdelivered: false },
+      order: [['createdAt', 'DESC']],
+    });
+  }
+
+  async setReadFlagTrue(messageId: number) {
+    await this.messageRepository.update(
+      { hasdelivered: true },
+      { where: { id: messageId } },
+    );
+  }
+
   async deleteMessage(id: number) {
     await this.messageRepository.destroy({ where: { id } });
   }
